@@ -88,7 +88,7 @@ namespace Junkyard
             viewHeight = pp.BackBufferHeight;
 
             // initialize render targets
-            shadowDepthTarget = new RenderTarget2D(device, viewWidth / 2, viewHeight / 2,
+            shadowDepthTarget = new RenderTarget2D(device, viewWidth, viewHeight,
                 false, SurfaceFormat.Single, DepthFormat.Depth24);
             lightDepthTarget = new RenderTarget2D(device, viewWidth, viewHeight,
                 false, SurfaceFormat.Single, DepthFormat.Depth24);

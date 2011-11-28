@@ -9,7 +9,7 @@ namespace Junkyard
 {
     interface IDrawable
     {        
-        void Draw(Effect effect);        
+        void Draw(Effect effect);
     }
 
     class Sprite3D : IDrawable
@@ -71,7 +71,12 @@ namespace Junkyard
             {
                 pass.Apply();
                 effect.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleStrip, vertices, 0, 2);
-            }
+            }           
+        }
+
+        public double Distance(Sprite3D other)
+        {
+            return Vector3.Distance(Position, other.Position);
         }
     }
 

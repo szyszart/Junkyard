@@ -83,81 +83,112 @@
       <Importer>FontDescriptionImporter</Importer>
       <Processor>FontDescriptionProcessor</Processor>
     </Compile>
+    <Compile Include="Fonts\menufont.spritefont">
+      <Name>menufont</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+    </Compile>
+    <Compile Include="Fonts\gamefont.spritefont">
+      <Name>gamefont</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Images\others\blisko.png">
+    <Compile Include="Images\Others\blisko.png">
       <Name>blisko</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Images\others\kapitan.png">
+    <Compile Include="Images\Others\kapitan.png">
       <Name>kapitan</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Images\others\oddalenie.png">
+    <Compile Include="Images\Others\oddalenie.png">
       <Name>oddalenie</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Images\others\powietrze_male.png">
+    <Compile Include="Images\Others\powietrze_male.png">
       <Name>powietrze_male</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Images\others\tablica.png">
+    <Compile Include="Images\Others\tablica.png">
       <Name>tablica</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Images\units\nuk\attack.png">
+    <Compile Include="Images\Units\nuk\attack.png">
       <Name>attack</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Images\units\nuk\die.png">
+    <Compile Include="Images\Units\nuk\die.png">
       <Name>die</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Images\units\nuk\idle.png">
+    <Compile Include="Images\Units\nuk\idle.png">
       <Name>idle</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Images\units\nuk\postwalk.png">
+    <Compile Include="Images\Units\nuk\postwalk.png">
       <Name>postwalk</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Images\units\nuk\prewalk.png">
+    <Compile Include="Images\Units\nuk\prewalk.png">
       <Name>prewalk</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Images\units\nuk\walk.png">
+    <Compile Include="Images\Units\nuk\walk.png">
       <Name>walk</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Images\others\lightbulb.png">
+    <Compile Include="Images\Others\lightbulb.png">
       <Name>lightbulb</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Images\others\blisko_norm.png">
+    <Compile Include="Images\Others\blisko_norm.png">
       <Name>blisko_norm</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Images\others\kapitan_norm.png">
+    <Compile Include="Images\Others\kapitan_norm.png">
       <Name>kapitan_norm</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Images\Menus\blank.png">
+      <Name>blank</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Images\Menus\background.png">
+      <Name>background</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Images\Menus\gradient.png">
+      <Name>gradient</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

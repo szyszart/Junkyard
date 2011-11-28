@@ -26,8 +26,8 @@ sampler2D TextureSampler = sampler_state
 	texture = <Texture>;
 	addressU = wrap;
 	addressV = wrap;
-	minfilter = point;
-	magfilter = point;
+	minfilter = anisotropic;
+	magfilter = anisotropic;
 	mipfilter = point;
 };
 

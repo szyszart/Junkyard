@@ -90,6 +90,9 @@
     <Reference Include="mscorlib">
       <Private>False</Private>
     </Reference>
+    <Reference Include="Nuclex.Input">
+      <HintPath>..\..\..\..\Documents\xna\nuclex-framework-r1404-binaries\xna-4.0-x86\Nuclex.Input.dll</HintPath>
+    </Reference>
     <Reference Include="System">
       <Private>False</Private>
     </Reference>
@@ -114,6 +117,17 @@
     <Compile Include="Program.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Scene.cs" />
+    <Compile Include="ScreenFactory.cs" />
+    <Compile Include="Screens\BackgroundScreen.cs" />
+    <Compile Include="Screens\GameplayScreen.cs" />
+    <Compile Include="Screens\LoadingScreen.cs" />
+    <Compile Include="Screens\MainMenuScreen.cs" />
+    <Compile Include="Screens\MenuEntry.cs" />
+    <Compile Include="Screens\MenuScreen.cs" />
+    <Compile Include="Screens\MessageBoxScreen.cs" />
+    <Compile Include="Screens\OptionsMenuScreen.cs" />
+    <Compile Include="Screens\PauseMenuScreen.cs" />
+    <Compile Include="Screens\PlayerIndexEventArgs.cs" />
     <Compile Include="Sprite3D.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -121,6 +135,10 @@
     <Content Include="GameThumbnail.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\GameStateManagement\GameStateManagement %28Windows%29.csproj">
+      <Project>{0A551D79-F37E-4529-9CA0-3FD2E9EA715E}</Project>
+      <Name>GameStateManagement %28Windows%29</Name>
+    </ProjectReference>
     <ProjectReference Include="..\JunkyardContent\JunkyardContent.contentproj">
       <Name>JunkyardContent</Name>
       <XnaReferenceType>Content</XnaReferenceType>
