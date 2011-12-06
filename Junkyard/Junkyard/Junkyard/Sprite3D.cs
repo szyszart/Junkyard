@@ -31,6 +31,38 @@ namespace Junkyard
 
         protected VertexPositionNormalTexture[] vertices;
 
+        public virtual bool Flipped 
+        {
+            get
+            {
+                return flipped;
+            }
+            set
+            {
+                flipped = value;
+                UpdateVerts();
+            }        
+        }
+        protected bool flipped = false;
+
+        protected void UpdateVerts()
+        {
+            if (flipped)
+            {
+                vertices[0] = new VertexPositionNormalTexture(new Vector3(-1, +1, 0), Vector3.Backward, new Vector2(1, 0));
+                vertices[1] = new VertexPositionNormalTexture(new Vector3(+1, +1, 0), Vector3.Backward, new Vector2(0, 0));
+                vertices[2] = new VertexPositionNormalTexture(new Vector3(-1, -1, 0), Vector3.Backward, new Vector2(1, 1));
+                vertices[3] = new VertexPositionNormalTexture(new Vector3(+1, -1, 0), Vector3.Backward, new Vector2(0, 1));
+            }
+            else
+            {
+                vertices[0] = new VertexPositionNormalTexture(new Vector3(-1, +1, 0), Vector3.Backward, new Vector2(0, 0));
+                vertices[1] = new VertexPositionNormalTexture(new Vector3(+1, +1, 0), Vector3.Backward, new Vector2(1, 0));
+                vertices[2] = new VertexPositionNormalTexture(new Vector3(-1, -1, 0), Vector3.Backward, new Vector2(0, 1));
+                vertices[3] = new VertexPositionNormalTexture(new Vector3(+1, -1, 0), Vector3.Backward, new Vector2(1, 1));
+            }
+        }
+
         public Sprite3D(Texture2D texture, Texture2D normalMap, Vector3 position, Quaternion rotation, Vector3 scale)
         {
             this.Texture = texture;
@@ -41,12 +73,9 @@ namespace Junkyard
             this.TintColor = Color.White;            
             
             vertices = new VertexPositionNormalTexture[4];
-            vertices[0] = new VertexPositionNormalTexture(new Vector3(-1, +1, 0), Vector3.Backward, new Vector2(0, 0));
-            vertices[1] = new VertexPositionNormalTexture(new Vector3(+1, +1, 0), Vector3.Backward, new Vector2(1, 0));
-            vertices[2] = new VertexPositionNormalTexture(new Vector3(-1, -1, 0), Vector3.Backward, new Vector2(0, 1));
-            vertices[3] = new VertexPositionNormalTexture(new Vector3(+1, -1, 0), Vector3.Backward, new Vector2(1, 1));
+            UpdateVerts();
         }
-                
+
         public Sprite3D(Texture2D texture, Vector3 position)
             : this(texture, null, position, Quaternion.CreateFromYawPitchRoll(0, 0, 0), Vector3.One)
         {
@@ -93,8 +122,10 @@ namespace Junkyard
 
     class FrameSprite3D : Sprite3D
     {
-        public SpriteSheetDimensions gridDimensions { get; set; }
+        public SpriteSheetDimensions GridDimensions { get; set; }
         protected Point currentFrame;
+        protected bool animationFinished = false;
+
         public Point CurrentFrame
         {
             get { return currentFrame; }
@@ -105,53 +136,93 @@ namespace Junkyard
             }
         }
 
+        public override bool Flipped
+        {
+            get
+            {
+                return flipped;
+            }
+            set
+            {
+                flipped = value;
+                UpdateTexCoords();
+            }
+        }
+
         protected void UpdateTexCoords()
         {
-            float boxWidth = (1.0f / gridDimensions.Width);
-            float boxHeight = (1.0f / gridDimensions.Height);
+            float boxWidth = (1.0f / GridDimensions.Width);
+            float boxHeight = (1.0f / GridDimensions.Height);
 
             float xLeft = currentFrame.X * boxWidth;
             float yTop = currentFrame.Y * boxHeight;
 
-            vertices[0].TextureCoordinate = new Vector2(xLeft, yTop);
-            vertices[1].TextureCoordinate = new Vector2(xLeft + boxWidth, yTop);
-            vertices[2].TextureCoordinate = new Vector2(xLeft, yTop + boxHeight);
-            vertices[3].TextureCoordinate = new Vector2(xLeft + boxWidth, yTop + boxHeight);
+            if (flipped)
+            {
+                vertices[0].TextureCoordinate = new Vector2(xLeft + boxWidth, yTop);
+                vertices[1].TextureCoordinate = new Vector2(xLeft, yTop);               
+                vertices[2].TextureCoordinate = new Vector2(xLeft + boxWidth, yTop + boxHeight);
+                vertices[3].TextureCoordinate = new Vector2(xLeft, yTop + boxHeight);
+            }
+            else
+            {
+                vertices[0].TextureCoordinate = new Vector2(xLeft, yTop);
+                vertices[1].TextureCoordinate = new Vector2(xLeft + boxWidth, yTop);
+                vertices[2].TextureCoordinate = new Vector2(xLeft, yTop + boxHeight);
+                vertices[3].TextureCoordinate = new Vector2(xLeft + boxWidth, yTop + boxHeight);
+            }
         }
 
         public FrameSprite3D(Texture2D texture, Texture2D normalMap, Vector3 position, Quaternion rotation, Vector3 scale, SpriteSheetDimensions gridDimensions)
             : base(texture, normalMap, position, rotation, scale)
         {
-            this.gridDimensions = gridDimensions;
-            CurrentFrame = Point.Zero;
+            GridDimensions = gridDimensions;
+            Reset();
         }
 
         public FrameSprite3D(Texture2D texture, Vector3 position, SpriteSheetDimensions gridDimensions)
             : this(texture, null, position, Quaternion.CreateFromYawPitchRoll(0, 0, 0), Vector3.One, gridDimensions)
-        {
+        {            
         }
 
         public void NextFrame()
         {
+            if (animationFinished)
+                return; 
+
             currentFrame.X++;
-            if (currentFrame.X >= gridDimensions.Width)
+            if (currentFrame.X >= GridDimensions.Width)
             {
                 currentFrame.X = 0;
                 currentFrame.Y++;
-                if (currentFrame.Y >= gridDimensions.Height)
-                    currentFrame.Y = 0;
+                //if (currentFrame.Y >= GridDimensions.Height)
+                    //currentFrame.Y = 0;
             }
-            int numFrames = currentFrame.Y * gridDimensions.Width + currentFrame.X;
-            if (numFrames >= gridDimensions.NumFrames)
+            int numFrames = currentFrame.Y * GridDimensions.Width + currentFrame.X;
+            if (numFrames >= GridDimensions.NumFrames)
             {
+                animationFinished = true;
                 currentFrame.X = currentFrame.Y = 0;
             }
             UpdateTexCoords();
-        }
+        }        
 
         public void Reset()
         {
             CurrentFrame = Point.Zero;
+            animationFinished = false;
+        }
+
+        public bool AnimationFinished
+        {
+            get
+            {
+                if (animationFinished == true)
+                {
+                    var a = 2;
+                }
+                return animationFinished;
+            }
         }
     }
 }

@@ -25,7 +25,6 @@ namespace GameStateManagement
         Hidden,
     }
 
-
     /// <summary>
     /// A screen is a single layer that has update and draw logic, and which
     /// can be combined with other layers to build up a complex menu system.
@@ -50,7 +49,6 @@ namespace GameStateManagement
 
         bool isPopup = false;
 
-
         /// <summary>
         /// Indicates how long the screen takes to
         /// transition on when it is activated.
@@ -63,7 +61,6 @@ namespace GameStateManagement
 
         TimeSpan transitionOnTime = TimeSpan.Zero;
 
-
         /// <summary>
         /// Indicates how long the screen takes to
         /// transition off when it is deactivated.
@@ -75,7 +72,6 @@ namespace GameStateManagement
         }
 
         TimeSpan transitionOffTime = TimeSpan.Zero;
-
 
         /// <summary>
         /// Gets the current position of the screen transition, ranging
@@ -90,7 +86,6 @@ namespace GameStateManagement
 
         float transitionPosition = 1;
 
-
         /// <summary>
         /// Gets the current alpha of the screen transition, ranging
         /// from 1 (fully active, no transition) to 0 (transitioned
@@ -100,7 +95,6 @@ namespace GameStateManagement
         {
             get { return 1f - TransitionPosition; }
         }
-
 
         /// <summary>
         /// Gets the current screen transition state.
@@ -112,7 +106,6 @@ namespace GameStateManagement
         }
 
         ScreenState screenState = ScreenState.TransitionOn;
-
 
         /// <summary>
         /// There are two possible reasons why a screen might be transitioning
@@ -130,7 +123,6 @@ namespace GameStateManagement
 
         bool isExiting = false;
 
-
         /// <summary>
         /// Checks whether this screen is active and can respond to user input.
         /// </summary>
@@ -146,7 +138,6 @@ namespace GameStateManagement
 
         bool otherScreenHasFocus;
 
-
         /// <summary>
         /// Gets the manager that this screen belongs to.
         /// </summary>
@@ -157,7 +148,6 @@ namespace GameStateManagement
         }
 
         ScreenManager screenManager;
-
 
         /// <summary>
         /// Gets the index of the player who is currently controlling this screen,
@@ -174,7 +164,6 @@ namespace GameStateManagement
         }
 
         PlayerIndex? controllingPlayer;
-
 
         /// <summary>
         /// Gets the gestures the screen is interested in. Screens should be as specific
@@ -215,9 +204,8 @@ namespace GameStateManagement
             protected set { isSerializable = value; }
         }
 
-        bool isSerializable = true;
-        
-        
+        bool isSerializable = true;        
+
         /// <summary>
         /// Activates the screen. Called when the screen is added to the screen manager or if the game resumes
         /// from being paused or tombstoned.
@@ -227,19 +215,16 @@ namespace GameStateManagement
         /// On Xbox and Windows this will always be false.
         /// </param>
         public virtual void Activate(bool instancePreserved) { }
-
         
         /// <summary>
         /// Deactivates the screen. Called when the game is being deactivated due to pausing or tombstoning.
         /// </summary>
         public virtual void Deactivate() { }
 
-
         /// <summary>
         /// Unload content for the screen. Called when the screen is removed from the screen manager.
         /// </summary>
         public virtual void Unload() { }
-
 
         /// <summary>
         /// Allows the screen to run logic, such as updating the transition position.
@@ -291,7 +276,6 @@ namespace GameStateManagement
             }
         }
 
-
         /// <summary>
         /// Helper for updating the screen transition position.
         /// </summary>
@@ -320,7 +304,6 @@ namespace GameStateManagement
             return true;
         }
 
-
         /// <summary>
         /// Allows the screen to handle user input. Unlike Update, this method
         /// is only called when the screen is active, and not when some other
@@ -328,12 +311,10 @@ namespace GameStateManagement
         /// </summary>
         public virtual void HandleInput(GameTime gameTime, InputState input) { }
 
-
         /// <summary>
         /// This is called when the screen should draw itself.
         /// </summary>
         public virtual void Draw(GameTime gameTime) { }
-
 
         /// <summary>
         /// Tells the screen to go away. Unlike ScreenManager.RemoveScreen, which

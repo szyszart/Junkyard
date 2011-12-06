@@ -61,10 +61,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="lua51">
-      <HintPath>..\..\..\..\..\Documents\ii.uni\xna\LuaInterface_2.0.3\luainterface-read-only\Built\lua51.dll</HintPath>
+      <HintPath>bin\x86\lua51.dll</HintPath>
     </Reference>
     <Reference Include="LuaInterface">
-      <HintPath>..\..\..\..\..\Documents\ii.uni\xna\LuaInterface_2.0.3\luainterface-read-only\Built\LuaInterface.dll</HintPath>
+      <HintPath>bin\x86\LuaInterface.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
       <Private>False</Private>
@@ -116,6 +116,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BattleUnit.cs" />
+    <Compile Include="Board.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="Light.cs" />
     <Compile Include="LuaMachine.cs" />
@@ -136,6 +138,7 @@
     <Compile Include="Screens\PauseMenuScreen.cs" />
     <Compile Include="Screens\PlayerIndexEventArgs.cs" />
     <Compile Include="Sprite3D.cs" />
+    <Compile Include="UIControls.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />

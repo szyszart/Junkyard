@@ -37,14 +37,14 @@ local staticElements = {
 local statki = {
 	ship1 = {
 		assetName = "Images/Others/kapitan",
-		pos = { -4.0, 0.0, -1.2 },
+		pos = { -3.0, 0.0, -1.2 },
 		yawpitchroll = { 0, 0, 0 },
 		scale = { 2.0, 2.0, 1.0 },
 		normalMap = "Images/Others/kapitan_norm"
 	},
 	ship2 = {
 		assetName = "Images/Others/kapitan",
-		pos = { 6.0, 0.5, -1.2 },
+		pos = { 5.0, 0.5, -1.2 },
 		yawpitchroll = { MathHelper.ToRadians(180), MathHelper.ToRadians(5), 0 },
 		scale = { 2.0, 2.0, 1.0 },
 		normalMap = "Images/Others/kapitan_norm"

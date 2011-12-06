@@ -251,7 +251,7 @@ namespace GameStateManagement
         /// Adds a new screen to the screen manager.
         /// </summary>
         public void AddScreen(GameScreen screen, PlayerIndex? controllingPlayer)
-        {
+        {            
             screen.ControllingPlayer = controllingPlayer;
             screen.ScreenManager = this;
             screen.IsExiting = false;
