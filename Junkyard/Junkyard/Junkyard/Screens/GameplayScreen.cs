@@ -44,11 +44,9 @@ namespace Junkyard.Screens
 
         #region Fields
 
-        ContentManager _content;        
-
+        ContentManager _content;
         float _pauseAlpha;
-
-        InputAction _pauseAction;
+        InputAction _pauseAction;       
 
         #endregion
 
@@ -96,7 +94,6 @@ namespace Junkyard.Screens
 
         #endregion
 
-
         #region Initialization
 
 
@@ -119,7 +116,7 @@ namespace Junkyard.Screens
         /// Load graphics content for the game.
         /// </summary>
         public override void Activate(bool instancePreserved)
-        {
+        {            
             if (!instancePreserved)
             {
                 if (_content == null)
@@ -169,7 +166,7 @@ namespace Junkyard.Screens
 
         protected void InitializeScene()
         {
-            Layer layer = new Layer(-1.25f);
+            Layer layer = new Layer(-1.25f);                      
 
             Vector3 spriteInitialPosition = new Vector3(1.0f, -0.2f, -1.25f);
             guy = new FrameSprite3D(animations[currentAnimation].texture, spriteInitialPosition + new Vector3(-2.5f, 0f, 0f), animations[currentAnimation].dimensions);
@@ -177,39 +174,95 @@ namespace Junkyard.Screens
             FrameSprite3D sprite = new FrameSprite3D(animations[currentAnimation].texture, spriteInitialPosition + new Vector3(0.5f, 0f, 0.0f), animations[currentAnimation].dimensions);
             layer.Drawables.Add(sprite);
             scene.Layers.Add(layer);
+
+            //string[] files = System.IO.Directory.GetFiles("Content/Maps", "*.lua");
+            var lua = LuaMachine.state;
+            object[] luaResult = lua.DoFile("Content/Maps/test.lua");
+            var tbl = (LuaInterface.LuaTable)luaResult[0];
+            
             Texture2D texture;
-            texture = _content.Load<Texture2D>("Images/Others/powietrze_male");
-            Sprite3D background = new Sprite3D(texture, null, new Vector3(0, 5.0f, -20.0f), Quaternion.CreateFromYawPitchRoll(0, 0, 0), new Vector3(20.02f, 11.71f, 1.0f));
-            scene.Unlayered.Add(background);
+            // tutaj copypasta, bo jestem juz bardzo zmeczony
+            foreach (LuaInterface.LuaTable el in tbl.Values)
+            {
+                texture = _content.Load<Texture2D>((string)el["assetName"]);
+                var pos = el["pos"] as LuaInterface.LuaTable;                
+                var ypr = el["yawpitchroll"] as LuaInterface.LuaTable;
+                var scale = el["scale"] as LuaInterface.LuaTable;
 
-            Sprite3D floor = new Sprite3D(texture, null, new Vector3(0, -1.2f, -21.0f), Quaternion.CreateFromYawPitchRoll(0, -MathHelper.PiOver2, 0), new Vector3(20.0f, 20.0f, 1.0f));
-            scene.Unlayered.Add(floor);
+                var asset = new Sprite3D(
+                    texture,
+                    null,
+                    new Vector3((float)(double)pos[1], (float)(double)pos[2], (float)(double)pos[3]),
+                    Quaternion.CreateFromYawPitchRoll((float)(double)ypr[1], (float)(double)ypr[2], (float)(double)ypr[3]),
+                    new Vector3((float)(double)scale[1], (float)(double)scale[2], (float)(double)scale[3])
+                    );
 
-            texture = _content.Load<Texture2D>("Images/Others/lightbulb");
-            Sprite3D bulb = new Sprite3D(texture, null, new Vector3(0, 0, 0), Quaternion.CreateFromYawPitchRoll(0, 0, 0), new Vector3(0.1f, 0.1f, 1.0f));
-            scene.Unlayered.Add(bulb);
+                var normalMap = el["normalMap"];
+                if (normalMap != null)
+                    asset.NormalMap = _content.Load<Texture2D>((string)normalMap);
 
-            texture = _content.Load<Texture2D>("Images/Others/blisko");
-            Sprite3D hills = new Sprite3D(texture, null, new Vector3(0.0f, 0.0f, -1.0f), Quaternion.CreateFromYawPitchRoll(0, 0, 0), new Vector3(10.0f, 2.0f, 1.0f));
-            texture = _content.Load<Texture2D>("Images/Others/blisko_norm");
-            hills.NormalMap = texture;
-            scene.Unlayered.Add(hills);
+                scene.Unlayered.Add(asset);
+            }
 
-            texture = _content.Load<Texture2D>("Images/Others/oddalenie");
-            Sprite3D distantHills = new Sprite3D(texture, null, new Vector3(0.0f, -1.0f, -10.0f), Quaternion.CreateFromYawPitchRoll(0, 0, 0), new Vector3(20.0f, 6.0f, 1.0f));
-            scene.Unlayered.Add(distantHills);
+            var ships = (LuaInterface.LuaTable)luaResult[1];
 
-            texture = _content.Load<Texture2D>("Images/Others/kapitan");
-            ship = new Sprite3D(texture, null, new Vector3(-4.0f, 0.0f, -1.2f), Quaternion.CreateFromYawPitchRoll(0, 0, 0), new Vector3(2.0f, 2.0f, 1.0f));
-            texture = _content.Load<Texture2D>("Images/Others/kapitan_norm");
-            ship.NormalMap = texture;
-            scene.Unlayered.Add(ship);
+            foreach (object key in ships.Keys)
+            {
+                var el = ships[key] as LuaInterface.LuaTable;                
+                texture = _content.Load<Texture2D>((string)el["assetName"]);
+                var pos = el["pos"] as LuaInterface.LuaTable;
+                var ypr = el["yawpitchroll"] as LuaInterface.LuaTable;
+                var scale = el["scale"] as LuaInterface.LuaTable;
 
-            texture = _content.Load<Texture2D>("Images/Others/kapitan");
-            ship2 = new Sprite3D(texture, null, new Vector3(6.0f, 0.5f, -1.2f), Quaternion.CreateFromYawPitchRoll(MathHelper.ToRadians(180), MathHelper.ToRadians(5), 0), new Vector3(2.0f, 2.0f, 1.0f));
-            texture = _content.Load<Texture2D>("Images/Others/kapitan_norm");
-            ship2.NormalMap = texture;
-            scene.Unlayered.Add(ship2);
+                var asset = new Sprite3D(
+                    texture,
+                    null,
+                    new Vector3((float)(double)pos[1], (float)(double)pos[2], (float)(double)pos[3]),
+                    Quaternion.CreateFromYawPitchRoll((float)(double)ypr[1], (float)(double)ypr[2], (float)(double)ypr[3]),
+                    new Vector3((float)(double)scale[1], (float)(double)scale[2], (float)(double)scale[3])
+                    );
+
+                var normalMap = el["normalMap"];
+                if (normalMap != null)
+                    asset.NormalMap = _content.Load<Texture2D>((string)normalMap);
+
+                if ((string)key == "ship1")
+                    ship = asset;
+                else if ((string)key == "ship2")
+                    ship2 = asset;
+
+                scene.Unlayered.Add(asset);
+            }
+
+            //texture = _content.Load<Texture2D>("Images/Others/powietrze_male");
+            //Sprite3D floor = new Sprite3D(texture, null, new Vector3(0, -1.2f, -21.0f), Quaternion.CreateFromYawPitchRoll(0, -MathHelper.PiOver2, 0), new Vector3(20.0f, 20.0f, 1.0f));
+            //scene.Unlayered.Add(floor);
+
+            //texture = _content.Load<Texture2D>("Images/Others/lightbulb");
+            //Sprite3D bulb = new Sprite3D(texture, null, new Vector3(0, 0, 0), Quaternion.CreateFromYawPitchRoll(0, 0, 0), new Vector3(0.1f, 0.1f, 1.0f));
+            //scene.Unlayered.Add(bulb);
+
+            //texture = _content.Load<Texture2D>("Images/Others/blisko");
+            //Sprite3D hills = new Sprite3D(texture, null, new Vector3(0.0f, 0.0f, -1.0f), Quaternion.CreateFromYawPitchRoll(0, 0, 0), new Vector3(10.0f, 2.0f, 1.0f));
+            //texture = _content.Load<Texture2D>("Images/Others/blisko_norm");
+            //hills.NormalMap = texture;
+            //scene.Unlayered.Add(hills);
+
+            //texture = _content.Load<Texture2D>("Images/Others/oddalenie");
+            //Sprite3D distantHills = new Sprite3D(texture, null, new Vector3(0.0f, -1.0f, -10.0f), Quaternion.CreateFromYawPitchRoll(0, 0, 0), new Vector3(20.0f, 6.0f, 1.0f));
+            //scene.Unlayered.Add(distantHills);
+
+            //texture = _content.Load<Texture2D>("Images/Others/kapitan");
+            //ship = new Sprite3D(texture, null, new Vector3(-4.0f, 0.0f, -1.2f), Quaternion.CreateFromYawPitchRoll(0, 0, 0), new Vector3(2.0f, 2.0f, 1.0f));
+            //texture = _content.Load<Texture2D>("Images/Others/kapitan_norm");
+            //ship.NormalMap = texture;
+            //scene.Unlayered.Add(ship);
+
+            //texture = _content.Load<Texture2D>("Images/Others/kapitan");
+            //ship2 = new Sprite3D(texture, null, new Vector3(6.0f, 0.5f, -1.2f), Quaternion.CreateFromYawPitchRoll(MathHelper.ToRadians(180), MathHelper.ToRadians(5), 0), new Vector3(2.0f, 2.0f, 1.0f));
+            //texture = _content.Load<Texture2D>("Images/Others/kapitan_norm");
+            //ship2.NormalMap = texture;
+            //scene.Unlayered.Add(ship2);
 
             scene.SimpleLights.InsertRange(0, Lights);
         }
@@ -251,7 +304,13 @@ namespace Junkyard.Screens
 
             if (IsActive)
             {
-                
+                #region temporary stupid logic
+                foreach (Layer layer in scene.Layers)
+                {
+                    layer.Drawables.ForEach(x => { if (x != guy) ((Sprite3D)x).Position += new Vector3(0.03f, 0.0f, 0.0f); });
+                    layer.Drawables.RemoveAll(x => ((Sprite3D)x).Distance(ship2) < 1.5);
+                }
+                #endregion
             }
         }
 
@@ -355,9 +414,7 @@ namespace Junkyard.Screens
                 {
                     frameTime -= timePerFrame;
                     guy.NextFrame();
-                }
-
-                camera.Update();
+                }               
 
                 elapsedTime += gameTime.ElapsedGameTime;
                 if (elapsedTime > TimeSpan.FromSeconds(1))
@@ -365,15 +422,7 @@ namespace Junkyard.Screens
                     elapsedTime -= TimeSpan.FromSeconds(1);
                     frameRate = frameCounter;
                     frameCounter = 0;
-                }
-
-                #region temporary stupid logic
-                foreach (Layer layer in scene.Layers)
-                {
-                    layer.Drawables.ForEach(x => { if (x != guy) ((Sprite3D)x).Position += new Vector3(0.03f, 0.0f, 0.0f); });
-                    layer.Drawables.RemoveAll(x => ((Sprite3D)x).Distance(ship2) < 1.5);
-                }
-                #endregion
+                }                
 
                 camera.Update();            //czemu dwa razy camera.Update() ?
             }
