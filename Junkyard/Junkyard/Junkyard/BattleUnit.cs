@@ -4,134 +4,201 @@ using Microsoft.Xna.Framework;
 using System;
 
 namespace Junkyard
-{
-    class Simulation
+{ 
+    public class BattleUnit : IDrawable
     {
-        public bool EnemyInRange(BattleUnit unit, float range)
-        {
-            // implement me!
-            return false;
-        }
-    }
+        public Simulation Simulation { get; set; }
+        public Player Player { get; set; }
 
-    class AnimationData
-    {        
-        public SpriteSheetDimensions Dimensions { get; set; }
-        public Texture2D SpriteSheet { get; set; }
-        public AnimationData(SpriteSheetDimensions dimensions, Texture2D sheet)
-        {            
-            Dimensions = dimensions;
-            SpriteSheet = sheet;
-        }
-    }    
+        public int HP { get; set; }
+        public bool reallyDead = false;
 
-    class BattleUnitSkin
-    {
-        protected Dictionary<string, AnimationData> animations;
-        
-        public BattleUnitSkin()
-        {
-            animations = new Dictionary<string, AnimationData>();
-        }
+        public ScaledSprite3D Avatar { get; protected set; }
 
-        public AnimationData GetAnimation(string name)
-        {
-            return animations[name];
-        }
+        // only for DEBUGGING PURPOSES        
+        protected int acumulatedDmg = 0;
 
-        public void SetAnimation(string name, AnimationData data)
-        {
-            animations[name] = data;
-        }
-    }
-
-    abstract class BattleUnit
-    {
-        public float HP { get; set; }
         public BattleUnit()
         {
-            HP = 100.0f;
         }
+
+        public BattleUnit(Simulation simulation, Player player)
+        {
+            Simulation = simulation;
+            Player = player;
+        }
+
+        public virtual void OnSpawn() { }
+        public virtual void OnTick(GameTime time) { }
+        public virtual void OnDamage(int dmg) { acumulatedDmg += dmg; }
+        public virtual void OnDeath() { }
+        public virtual void OnRemove() { }
+
+        public virtual void Draw(Effect effect) { }
     }
 
-    class SimpleBattleUnit : BattleUnit
+    public class AnimatedBattleUnit : BattleUnit
     {
-        class StateDescription
+        public Dictionary<string, Animation> Animations = new Dictionary<string,Animation>();
+               
+        protected string currentAnimation;
+        protected int currentFrame = -1;
+        protected float frameDuration;
+        protected float timeElapsed = 0;
+
+        public AnimatedBattleUnit()
         {
-            public string PreAnim;
-            public string LoopAnim;
-            public string PostAnim;
-            public StateDescription(string pre, string loop, string post)
+            Avatar = new ScaledSprite3D();
+        }
+        
+        public AnimatedBattleUnit(Simulation simulation, Player player, Texture2D texture, Vector3 position)
+            : base(simulation, player) 
+        {
+            Avatar = new ScaledSprite3D(texture, position);
+            Avatar.Position = position;
+        }
+
+        public override void OnTick(GameTime time)
+        {
+            timeElapsed += time.ElapsedGameTime.Milliseconds;
+            if (timeElapsed >= frameDuration)
             {
-                PreAnim = pre;
-                LoopAnim = loop;
-                PostAnim = post;
+                timeElapsed -= frameDuration;
+                NextFrame();
+            }
+
+            base.OnTick(time);
+        }
+
+        protected void NextFrame()
+        {
+            if (!AnimationEnded)
+                currentFrame++;
+        }
+
+        protected void AssertAnimation(string name)
+        {
+            if (currentAnimation != name)
+            {
+                Avatar.Texture = Animations[name].SpriteSheet;
+                ResetAnimation();
+                currentAnimation = name;
+                frameDuration = (1000.0f / Animations[currentAnimation].FramesPerSecond);
+                timeElapsed = 0;
             }
         }
 
-        static private Dictionary<SimpleBattleUnitState, StateDescription> stateDescriptions = new Dictionary<SimpleBattleUnitState, StateDescription>() 
+        protected void ResetAnimation()
         {
-            { SimpleBattleUnitState.Idle, new StateDescription(null, "idle", null) },
-            { SimpleBattleUnitState.Walk, new StateDescription("prewalk", "walk", "postwalk") },
-            { SimpleBattleUnitState.Attack, new StateDescription(null, "attack", null) },
-            { SimpleBattleUnitState.Die, new StateDescription(null, "die", null) }
-        };
-
-        public const float MeleeRange = 0.5f;
-        public enum SimpleBattleUnitState
-        {
-            Idle,
-            Walk,
-            Attack,
-            Die,
-            Done
+            currentFrame = 0;
         }
-        protected SimpleBattleUnitState state = SimpleBattleUnitState.Idle;
-        protected SimpleBattleUnitState next;
-        public FrameSprite3D Avatar { get; protected set; }
 
-        public BattleUnitSkin Skin { get; protected set; }
-        public Simulation Simulation { get; protected set; }
-        protected Vector3 Destination { get; set; }
-        protected Vector3 Direction { get; set; }
-
-        protected AnimationData currentAnimation, nextAnimation;
-
-        public SimpleBattleUnit(Simulation simulation, BattleUnitSkin skin, Vector3 position, Vector3 dest)
-        {
-            Simulation = simulation;
-            Skin = skin;
-            Destination = dest;
-            Direction = (Destination - position);
-            Direction.Normalize();
-
-            nextAnimation = currentAnimation = skin.GetAnimation("walk");
-            Avatar = new FrameSprite3D(currentAnimation.SpriteSheet, position, currentAnimation.Dimensions);
-            Avatar.Reset();
-        }        
-
-        protected bool HasNotYetArrived
+        protected bool AnimationEnded
         {
             get
             {
-                return (Vector3.Distance(Avatar.Position, Destination) > 0.1f);
+                if (currentAnimation != null && Animations.ContainsKey(currentAnimation))
+                    return (currentFrame >= Animations[currentAnimation].FrameCount);
+                else
+                    return true;                
             }
         }
 
-        public void Update(GameTime gameTime)
-        {          
-            Avatar.NextFrame();
-            if (Avatar.AnimationFinished)
+        public override void Draw(Effect effect)
+        {
+            if (currentFrame < Animations[currentAnimation].FrameCount)
             {
-                if (currentAnimation != nextAnimation)
-                {
-                    currentAnimation = nextAnimation;
-                    Avatar.Texture = currentAnimation.SpriteSheet;
-                    Avatar.GridDimensions = currentAnimation.Dimensions;                    
-                }
-                Avatar.Reset();
+                Avatar.TexRect = Animations[currentAnimation].Frames[currentFrame].Rectangle;
+                Avatar.Offset = Animations[currentAnimation].Frames[currentFrame].Offset;
             }
-        }        
+            Avatar.Draw(effect);
+        }
+    }
+
+    public class Infantry : AnimatedBattleUnit
+    {       
+        public float AttackRange { get; set; }
+        public float Speed { get; set; }
+
+        protected float direction = 1.0f;                
+        protected bool dying = false;
+
+        public Infantry()
+        {
+        }
+
+        public Infantry(Simulation simulation, Player player, Texture2D texture, Vector3 position) : base(simulation, player, texture, position)
+        {
+            AssertAnimation("walk");            
+        }
+
+        public override void OnTick(GameTime time)
+        {            
+            AssertFacingTowardsFoe();
+
+            if (dying)
+            {
+                AssertAnimation("dying");
+                if (AnimationEnded)
+                {
+                    reallyDead = true;
+                }
+            }
+            else
+            {
+                BattleUnit foe = Simulation.GetNearestFoe(this);
+                float dist = (foe != null) ? Vector3.Distance(foe.Avatar.Position, Avatar.Position) : float.PositiveInfinity;
+                if (foe != null && dist <= AttackRange && Math.Sign(direction) * (foe.Avatar.Position.X - Avatar.Position.X) >= 0.25 * AttackRange)
+                {
+                    AssertAnimation("attack");
+                }
+                else if (currentAnimation != "attack" || AnimationEnded)
+                {
+                    AssertAnimation("walk");
+                    Move();
+                }
+
+                HP -= acumulatedDmg;
+                acumulatedDmg = 0;
+
+                if (HP <= 0)
+                {
+                    dying = true;
+                }
+
+                if (currentAnimation == "attack" && AnimationEnded)
+                {
+                    if (foe != null)
+                    {
+                        Simulation.Attack(foe, this);
+                    }
+                }
+
+                if (AnimationEnded)
+                    ResetAnimation();
+            }
+            base.OnTick(time);
+        }
+
+        public override void OnDeath()
+        {
+            AssertAnimation("death");
+            dying = true;
+        }
+
+        protected void Move()
+        {            
+            Avatar.Position += direction * Speed * Vector3.UnitX;
+        }
+
+        protected void AssertFacingTowardsFoe()
+        {
+            direction = Player.Direction;
+            if (Player != null) {
+                Avatar.Flipped = (direction < 0);
+            }
+            
+        }
     }
 
 }

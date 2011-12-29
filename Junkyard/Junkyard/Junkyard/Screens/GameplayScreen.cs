@@ -10,6 +10,7 @@
 #region Using Statements
 using System;
 using System.Threading;
+using System.IO;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -18,6 +19,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using Microsoft.Xna.Framework.GamerServices;
 using GameStateManagement;
+using LuaInterface;
 #endregion
 
 namespace Junkyard.Screens
@@ -27,19 +29,10 @@ namespace Junkyard.Screens
     /// </summary>
     class GameplayScreen : GameScreen
     {
-        #region Structures
-        private struct AnimationData
-        {
-            public Texture2D texture;
-            public SpriteSheetDimensions dimensions;
-            public string name;
-            public AnimationData(Texture2D texture, SpriteSheetDimensions dims, string name)
-            {
-                this.texture = texture;
-                this.dimensions = dims;
-                this.name = name;
-            }
-        }
+        #region Constants
+
+        private const string UnitsDirectory = "Images\\Units";
+
         #endregion
 
         #region Fields
@@ -47,19 +40,6 @@ namespace Junkyard.Screens
         ContentManager _content;
         float _pauseAlpha;
         InputAction _pauseAction;       
-
-        #endregion
-
-        #region Krzysztoff's Fields
-        private static Dictionary<string, SpriteSheetDimensions> animationParams = new Dictionary<string, SpriteSheetDimensions>()
-        {
-            { "walk",       new SpriteSheetDimensions(4, 2,  8) },
-            { "attack",     new SpriteSheetDimensions(6, 4, 22) },
-            { "die",        new SpriteSheetDimensions(5, 3, 13) },
-            { "idle",       new SpriteSheetDimensions(3, 2,  6) },
-            { "postwalk",   new SpriteSheetDimensions(4, 2,  8) },
-            { "prewalk",    new SpriteSheetDimensions(4, 2,  7) },            
-        };
 
         private List<Light> Lights = new List<Light>()
         {
@@ -69,34 +49,23 @@ namespace Junkyard.Screens
             new Light(LightType.Point, Color.Pink,  new Vector3( 1.0f, -0.1f, -0.2f), Vector3.Zero, 0.8f),
         };
 
-        private List<AnimationData> animations;
-                
         private SpriteFont spriteFont;        
 
         private Scene scene;
         private SimpleSceneRenderer sceneRenderer;
         private FreeCamera camera;
-        private FrameSprite3D guy;
-        private Sprite3D ship;
-        private Sprite3D ship2;
-        private Vector3 P1SpriteInitialPosition = new Vector3(-1f, -0.2f, -1.25f);
 
-        private int currentAnimation = 0;
-
-        private float timePerFrame = 1000 / 16;
-        private float frameTime = 0;
         private int frameRate = 0;
         private int frameCounter = 0;
         private TimeSpan elapsedTime = TimeSpan.Zero;
-        private int timeFromAnimationChange = 0;
-        private int animationChangeDelay = 200;
 
         private PuzzleBoardWidget puzzleBoard1;
         private PuzzleBoardWidget puzzleBoard2;
 
         private Simulation simulation;
-        // TODO: just testing
-        private SimpleBattleUnit unit;
+        private Player player1, player2;
+
+        private BattleUnitFactoryDispatcher factoryDispatcher = new BattleUnitFactoryDispatcher();
 
         #endregion
 
@@ -122,9 +91,7 @@ namespace Junkyard.Screens
         public override void Activate(bool instancePreserved)
         {            
             if (!instancePreserved)
-            {
-                simulation = new Simulation();
-
+            {                
                 if (_content == null)
                 {
                     _content = new ContentManager(ScreenManager.Game.Services, "Content");
@@ -133,33 +100,26 @@ namespace Junkyard.Screens
                 }
 
                 PresentationParameters pp = ScreenManager.GraphicsDevice.PresentationParameters;
-                float aspectRatio = (float)pp.BackBufferWidth / (float)pp.BackBufferHeight;
-                camera = new FreeCamera(new Vector3(0.8f, 2.5f, 9.8f), MathHelper.ToRadians(45), aspectRatio, 0.1f, 1000.0f);
+                float aspectRatio = (float)pp.BackBufferWidth / (float)pp.BackBufferHeight;                
+                camera = new FreeCamera(new Vector3(-2.2f, 0.36f, 3.8f), MathHelper.ToRadians(45), aspectRatio, 0.1f, 1000.0f);
 
                 scene = new Scene();
                 scene.Camera = camera;
                 scene.Ambient = new Color(0.7f, 0.7f, 0.7f);
 
                 spriteFont = _content.Load<SpriteFont>("Fonts/sample");
-                // load some sprite sheets
-                animations = new List<AnimationData>();
-                foreach (KeyValuePair<String, SpriteSheetDimensions> entry in animationParams)
-                {
-                    Texture2D texture = _content.Load<Texture2D>(String.Format("Images/units/nuk/{0}", entry.Key));
-                    animations.Add(new AnimationData(texture, entry.Value, entry.Key));
-                }
 
                 Light dirLight = new Light(LightType.Directional, Color.Red);
                 dirLight.Direction = new Vector3(0.45f, -0.15f, 0.875f);
                 dirLight.Position = new Vector3(5.6f, 7.6f, 12.0f);
                 scene.ShadowCastingLights.Add(dirLight);
 
-                animations = new List<AnimationData>();
-                foreach (KeyValuePair<String, SpriteSheetDimensions> entry in animationParams)
-                {
-                    Texture2D texture = _content.Load<Texture2D>(String.Format("Images/units/nuk/{0}", entry.Key));
-                    animations.Add(new AnimationData(texture, entry.Value, entry.Key));
-                }
+                player1 = new Player("p1");
+                player1.InitialPosition = new Vector3(-2.5f, -1.1f, -1.25f);
+                player1.Direction = 1.0f;
+                player2 = new Player("p2");
+                player2.InitialPosition = new Vector3(4.2f, -1.1f, -1.25f);
+                player2.Direction = -1.0f;
 
                 InitializeScene();
 
@@ -167,62 +127,170 @@ namespace Junkyard.Screens
                 // timing mechanism that we have just finished a very long frame, and that
                 // it should not try to catch up.
                 ScreenManager.Game.ResetElapsedTime();
-
-                // add the debug puzzleboard control
+                
                 int boardMargin = 15;
-                int boardWidth = (pp.BackBufferWidth - 3 * boardMargin) / 2;
+                int boardWidth = (pp.BackBufferWidth - 3 * boardMargin) / 3;
                 int boardHeight = 5 * boardWidth / 6;
 
                 BoardLayoutFinder finder = new BoardLayoutFinder();
+                ProcessLayouts(finder);
 
-                finder.AddLayout("infantry3", new LayoutDescription("mm", "mm"));
-                finder.AddLayout("infantry2", new LayoutDescription(null, "ff"));
-                finder.AddLayout("infantry", new LayoutDescription("ww", "gg"));
-
-                PuzzleBoard board1 = new PuzzleBoard(6, 5);                
+                PuzzleBoard board1 = new PuzzleBoard(6, 5);
+                board1.Player = player1;
                 board1.Randomize();
                 puzzleBoard1 = new PuzzleBoardWidget(this, _content, new Point(boardMargin, boardMargin), new Point(boardWidth, boardHeight));
                 puzzleBoard1.LayoutFinder = finder;
                 puzzleBoard1.Board = board1;
-                puzzleBoard1.LayoutMatches += this.LayoutMatched;
+                puzzleBoard1.LayoutAccepted += this.LayoutAccepted;
 
                 PuzzleBoard board2 = new PuzzleBoard(6, 5);
+                board2.Player = player2;
                 board2.Randomize();
-                puzzleBoard2 = new PuzzleBoardWidget(this, _content, new Point(pp.BackBufferWidth - boardWidth - 2 * boardMargin, boardMargin), new Point(boardWidth, boardHeight));
+                puzzleBoard2 = new PuzzleBoardWidget(this, _content, new Point(pp.BackBufferWidth - boardWidth - 2 * boardMargin, boardMargin), new Point(boardWidth, boardHeight));                
                 puzzleBoard2.LayoutFinder = finder;
                 puzzleBoard2.Board = board2;
-                puzzleBoard2.LayoutMatches += this.LayoutMatched;
+                puzzleBoard2.LayoutAccepted += this.LayoutAccepted;
             }
         }
 
+        private Point LuaTableToPoint(LuaTable tbl)
+        {
+            return new Point((int)(double)tbl[1], (int)(double)tbl[2]);            
+        }
+
+        protected void ProcessLayouts(BoardLayoutFinder finder)
+        {
+            var lua = LuaMachine.state;
+            object[] luaResult = lua.DoFile("Content/Config/layouts.lua");
+            var tbl = (LuaTable)luaResult[0];
+            
+            string thumbnailsPath = (string)tbl["thumbnails"];
+            var blockSizeTbl = (LuaTable)tbl["block_size"];
+            Point blockSize = LuaTableToPoint(blockSizeTbl);
+
+            Texture2D thumbnailSprites = null;
+            if (thumbnailsPath != null)
+                thumbnailSprites = _content.Load<Texture2D>(thumbnailsPath);
+
+            foreach (var key in tbl.Keys)
+            {
+                if (key is double)
+                {
+                    var layoutTbl = (LuaTable)tbl[key];
+                    var top = (string)layoutTbl["top"];
+                    var bottom = (string)layoutTbl["bottom"];
+                    var unit = (string)layoutTbl["unit"];
+                    var coords = (LuaTable)layoutTbl["thumbnails"];
+
+                    LayoutDescription layout = new LayoutDescription(unit, top, bottom);
+
+                    if (coords != null && thumbnailSprites != null)
+                    {
+                        // process thumbnails coordinates
+                        List<Point> points = new List<Point>();
+                        foreach (var k in coords.Keys)
+                        {
+                            var coord = (LuaTable)coords[k];                            
+                            points.Add(LuaTableToPoint(coord));
+                        }
+                        layout.Thumbnails = thumbnailSprites;
+                        layout.ThumbnailBlocks = points.ToArray();
+                        layout.BlockSize = blockSize;
+                    }                    
+
+                    finder.AddLayout(layout);
+                }
+            }
+        }
+
+        protected Dictionary<string, Animation> ProcessAnimations(string unitName, LuaTable data)
+        {
+            Dictionary<string, Animation> animations = new Dictionary<string, Animation>();
+            foreach (string animName in data.Keys)
+            {
+                LuaTable animation = (LuaTable)data[animName];
+                
+                int fps = (int)(double)animation["fps"];
+                string sheetPath = (string)animation["spritesheet"];
+                
+                Texture2D currentTexture = _content.Load<Texture2D>(sheetPath);
+                Animation currentAnimation = new Animation(currentTexture, fps);                
+                
+                LuaTable frames = (LuaTable)animation["frames"];
+                foreach (LuaTable frame in frames.Values)
+                {                                        
+                    int x = (int)(double)frame["x"];
+                    int y = (int)(double)frame["y"];
+                    int w = (int)(double)frame["width"];
+                    int h = (int)(double)frame["height"];
+                    Rectangle rect = new Rectangle(x, y, w, h);
+
+                    int offx = (int)(double)frame["offsetx"];
+                    int offy = (int)(double)frame["offsety"];
+                    Point offset = new Point(offx, offy);
+
+                    currentAnimation.Frames.Add(new Frame(rect, offset));
+                }
+                animations[animName] = currentAnimation;
+            }
+            return animations;
+        }
+
+        protected BattleUnitFactory CreateFactory(string kind)
+        {
+            switch (kind)
+            {
+                case "infantry":
+                    return new InfantryFactory();
+                default:
+                    throw new ArgumentException("Unknown battle unit type.");
+            }
+        }
+        
+        protected void DoUnitLoading()
+        {              
+            var lua = LuaMachine.state;
+            string unitsPath = Path.Combine(_content.RootDirectory, UnitsDirectory);
+            foreach (string dir in Directory.GetDirectories(unitsPath, "*", SearchOption.AllDirectories))
+            {
+                foreach (string file in Directory.GetFiles(dir, "*.lua"))
+                {
+                    object[] retVals = lua.DoFile(file);
+                    LuaTable unitData = (LuaTable)retVals[0];                    
+
+                    string name = (string)unitData["name"];
+                    string kind = (string)unitData["class"];                    
+
+                    // process the animations
+                    LuaTable animationData = (LuaTable)unitData["animations"];
+                    var animations = ProcessAnimations(name, animationData);
+
+                    BattleUnitFactory factory = CreateFactory(kind);
+                    factory.Params = unitData;
+                    factory.Animations = animations;
+                    factoryDispatcher.RegisterFactory(name, factory);
+                }
+            }
+        }
+        
         protected void InitializeScene()
         {
-            Layer layer = new Layer(-1.25f);           
-            Vector3 spriteInitialPosition = new Vector3(2.0f, -0.2f, -1.25f);
+            DoUnitLoading();
 
-            BattleUnitSkin skin = new BattleUnitSkin();
-            skin.SetAnimation("attack", new Junkyard.AnimationData(new SpriteSheetDimensions(6, 4, 22), _content.Load<Texture2D>("Images/units/nuk/attack")));
-            skin.SetAnimation("die", new Junkyard.AnimationData(new SpriteSheetDimensions(5, 3, 13), _content.Load<Texture2D>("Images/units/nuk/die")));
-            skin.SetAnimation("idle", new Junkyard.AnimationData(new SpriteSheetDimensions(3, 2, 6), _content.Load<Texture2D>("Images/units/nuk/idle")));
-            skin.SetAnimation("postwalk", new Junkyard.AnimationData(new SpriteSheetDimensions(4, 2, 8), _content.Load<Texture2D>("Images/units/nuk/postwalk")));
-            skin.SetAnimation("prewalk", new Junkyard.AnimationData(new SpriteSheetDimensions(4, 2, 7), _content.Load<Texture2D>("Images/units/nuk/prewalk")));
-            skin.SetAnimation("walk", new Junkyard.AnimationData(new SpriteSheetDimensions(4, 2, 8), _content.Load<Texture2D>("Images/units/nuk/walk")));
-            unit = new SimpleBattleUnit(simulation, skin, spriteInitialPosition + new Vector3(-2.5f, 0f, 0f), new Vector3(3.6f, -0.2f, -1.25f));
-            layer.Drawables.Add(unit.Avatar);
+            simulation = new Simulation();            
 
-            guy = new FrameSprite3D(animations[currentAnimation].texture, spriteInitialPosition + new Vector3(-2.5f, 0f, 0f), animations[currentAnimation].dimensions);                        
-            //layer.Drawables.Add(guy);
-            FrameSprite3D sprite = new FrameSprite3D(animations[currentAnimation].texture, spriteInitialPosition + new Vector3(0.5f, 0f, 0.0f), animations[currentAnimation].dimensions);
-            //layer.Drawables.Add(sprite);
+            Layer layer = new Layer(-1.25f);
+            layer.Drawables.Add(simulation);
+
             scene.Layers.Add(layer);
 
+            // TODO: remove hardcoded paths
             //string[] files = System.IO.Directory.GetFiles("Content/Maps", "*.lua");
             var lua = LuaMachine.state;
             object[] luaResult = lua.DoFile("Content/Maps/test.lua");
             var tbl = (LuaInterface.LuaTable)luaResult[0];
             
-            Texture2D texture;
-            // tutaj copypasta, bo jestem juz bardzo zmeczony
+            Texture2D texture;            
             foreach (LuaInterface.LuaTable el in tbl.Values)
             {
                 texture = _content.Load<Texture2D>((string)el["assetName"]);
@@ -246,7 +314,7 @@ namespace Junkyard.Screens
             }
 
             var ships = (LuaInterface.LuaTable)luaResult[1];
-
+            
             foreach (object key in ships.Keys)
             {
                 var el = ships[key] as LuaInterface.LuaTable;                
@@ -267,14 +335,9 @@ namespace Junkyard.Screens
                 if (normalMap != null)
                     asset.NormalMap = _content.Load<Texture2D>((string)normalMap);
 
-                if ((string)key == "ship1")
-                    ship = asset;
-                else if ((string)key == "ship2")
-                    ship2 = asset;
-
                 scene.Unlayered.Add(asset);
             }
-
+           
             scene.SimpleLights.InsertRange(0, Lights);
         }
 
@@ -295,24 +358,19 @@ namespace Junkyard.Screens
 
         #endregion
 
-        #region Update and Draw
+        #region Update and Draw        
 
-        private void LayoutMatched(Widget src, string name)
+        private void LayoutAccepted(Widget src, LayoutInstance instance)
         {
-            Vector3 initialPos;
-            bool flipped;
-            if (src == puzzleBoard1)
-            {
-                initialPos = new Vector3(-0.9f, -0.2f, -1.25f);
-                flipped = false;
-            }
-            else {
-                initialPos = new Vector3(5.0f, -0.2f, -1.25f);
-                flipped = true;
-            }            
-            FrameSprite3D f = new FrameSprite3D(animations[currentAnimation].texture, initialPos, animations[currentAnimation].dimensions);
-            f.Flipped = flipped;
-            scene.Layers.Min.Drawables.Add(f);            
+            PuzzleBoardWidget widget = (PuzzleBoardWidget)src;
+            Player who = widget.Board.Player;
+
+            // spawn a new unit
+            BattleUnit unit = factoryDispatcher.Create(instance.Layout.Name);
+            unit.Simulation = simulation;
+            unit.Player = who;
+            unit.Avatar.Position = who.InitialPosition;                   
+            simulation.Add(unit);
         }
 
         /// <summary>
@@ -334,17 +392,10 @@ namespace Junkyard.Screens
             if (IsActive)
             {
                 #region temporary stupid logic
-                foreach (Layer layer in scene.Layers)
-                {
-                    // prawie jak Lisp
-                    layer.Drawables.ForEach(x => { ((Sprite3D)x).Position += new Vector3((((Sprite3D)x).Flipped ? -1 : 1)* 0.03f, 0, 0); });
-                    layer.Drawables.RemoveAll(x => ((Sprite3D)x).Distance(((Sprite3D)x).Flipped ? ship : ship2) < 0.9); 
-                    //layer.Drawables.RemoveAll(x => ((Sprite3D)x).Distance(ship2) < 0.9);
-                }
 
                 puzzleBoard1.Update(gameTime);
                 puzzleBoard2.Update(gameTime);
-                
+               
                 #endregion
             }
         }
@@ -383,14 +434,14 @@ namespace Junkyard.Screens
                 #region temporary keybord controls                                               
 
                 if (keyboardState.IsKeyDown(Keys.I))
-                    //camera.Translate(new Vector3(0, 0, -.02f));                    
-                    unit.Avatar.Flipped = !unit.Avatar.Flipped;
+                    camera.Translate(new Vector3(0, 0, -.02f));                                        
                 if (keyboardState.IsKeyDown(Keys.K))
                     camera.Translate(new Vector3(0, 0, .02f));
                 if (keyboardState.IsKeyDown(Keys.J))
                     camera.Position += new Vector3(-.02f, 0, 0);
                 if (keyboardState.IsKeyDown(Keys.L))
                     camera.Position += new Vector3(.02f, 0, 0);
+
                 if (keyboardState.IsKeyDown(Keys.Home))
                     camera.Pitch += .01f;
                 if (keyboardState.IsKeyDown(Keys.End))
@@ -401,38 +452,48 @@ namespace Junkyard.Screens
                 if (keyboardState.IsKeyDown(Keys.PageUp))
                     camera.Translate(new Vector3(0, .02f, 0));
 
+                // temporary camera controls
+                if (input.IsKeyPressed(Keys.I, null, out player))
+                    camera.Translate(Vector3.UnitZ * -0.1f);
+                if (input.IsKeyPressed(Keys.K, null, out player))
+                    camera.Translate(Vector3.UnitZ * 0.1f);
+                if (input.IsKeyPressed(Keys.J, null, out player))
+                    camera.Translate(Vector3.UnitX * -0.1f);
+                if (input.IsKeyPressed(Keys.L, null, out player))
+                    camera.Translate(Vector3.UnitX * 0.1f);
+
                 // player 1 temporary controls
-                if (input.IsNewKeyPress(Keys.W, null, out player))                    
+                if (input.IsNewKeyPress(Keys.W, null, out player))
                     puzzleBoard1.Up();
-                if (input.IsNewKeyPress(Keys.S, null, out player))                    
+                if (input.IsNewKeyPress(Keys.S, null, out player))
                     puzzleBoard1.Down();
-                if (input.IsNewKeyPress(Keys.A, null, out player))                    
+                if (input.IsNewKeyPress(Keys.A, null, out player))
                     puzzleBoard1.Left();
-                if (input.IsNewKeyPress(Keys.D, null, out player))                    
-                    puzzleBoard1.Right();
+                if (input.IsNewKeyPress(Keys.D, null, out player))
+                    puzzleBoard1.Right();                    
+
                 if (input.IsNewKeyPress(Keys.Q, null, out player))
                     puzzleBoard1.Select();
                 if (input.IsNewKeyPress(Keys.E, null, out player))
+                    puzzleBoard1.Accept();
+                if (input.IsNewKeyPress(Keys.R, null, out player))
                     puzzleBoard1.Randomize();
-
+               
                 // player 2 temporary controls
                 if (input.IsNewKeyPress(Keys.Up, null, out player))
                     puzzleBoard2.Up();
                 if (input.IsNewKeyPress(Keys.Down, null, out player))
-                    puzzleBoard2.Down();
+                    puzzleBoard2.Down();                    
                 if (input.IsNewKeyPress(Keys.Left, null, out player))
                     puzzleBoard2.Left();
                 if (input.IsNewKeyPress(Keys.Right, null, out player))
                     puzzleBoard2.Right();
-                if (input.IsNewKeyPress(Keys.Enter, null, out player))
+                if (input.IsNewKeyPress(Keys.RightControl, null, out player))
                     puzzleBoard2.Select();
+                if (input.IsNewKeyPress(Keys.Enter, null, out player))
+                    puzzleBoard2.Accept();
                 if (input.IsNewKeyPress(Keys.Back, null, out player))
                     puzzleBoard2.Randomize();
-
-                if (keyboardState.IsKeyDown(Keys.J))
-                    guy.Position += new Vector3(-0.1f, 0, 0);
-                if (keyboardState.IsKeyDown(Keys.L))
-                    guy.Position += new Vector3(0.1f, 0, 0);
 
                 if (keyboardState.IsKeyDown(Keys.Z))
                     camera.Yaw += .01f;
@@ -443,43 +504,9 @@ namespace Junkyard.Screens
                     sceneRenderer.RenderShadows = !sceneRenderer.RenderShadows;
                 #endregion
 
-                timeFromAnimationChange += gameTime.ElapsedGameTime.Milliseconds;
-                if (timeFromAnimationChange >= animationChangeDelay)
-                {                    
-                    if (keyboardState.IsKeyDown(Keys.Space))
-                    {
-                        timeFromAnimationChange = 0;
-                        currentAnimation++;
-                        if (currentAnimation >= animations.Count)
-                            currentAnimation = 0;
+                simulation.Tick(gameTime);
 
-                        guy.Texture = animations[currentAnimation].texture;
-                        guy.GridDimensions = animations[currentAnimation].dimensions;
-                        guy.Reset();
-                    }
-                }
-
-                frameTime += gameTime.ElapsedGameTime.Milliseconds;
-                if (frameTime >= timePerFrame)
-                {
-                    frameTime -= timePerFrame;
-                    foreach (Layer layer in scene.Layers)
-                    {
-                        foreach (IDrawable drawable in layer.Drawables)
-                        {
-                            // some dirty business going on here!
-                            if (drawable is FrameSprite3D)
-                            {
-                                FrameSprite3D s = (FrameSprite3D)drawable;
-                                s.NextFrame();
-                                if (s.AnimationFinished)
-                                    s.Reset();
-                            }
-                        }
-                    }                    
-                    unit.Update(gameTime);
-                }               
-
+                // FPS measurement
                 elapsedTime += gameTime.ElapsedGameTime;
                 if (elapsedTime > TimeSpan.FromSeconds(1))
                 {
@@ -492,7 +519,6 @@ namespace Junkyard.Screens
             }
         }
 
-
         /// <summary>
         /// Draws the gameplay screen.
         /// </summary>
@@ -502,18 +528,13 @@ namespace Junkyard.Screens
 
             sceneRenderer.Render(scene);
 
-            // Our player and enemy are both actually just text strings.
-            //spriteBatch.Begin();
-            //SpriteBatch spriteBatch = ScreenManager.SpriteBatch;           
-            //spriteBatch.DrawString(spriteFont, animations[currentAnimation].name, Vector2.Zero, Color.White);            
-            //string info = string.Format("cam: {0}, yaw: {1}", camera.Position.ToString(), camera.Yaw);
-            //spriteBatch.DrawString(spriteFont, info, new Vector2(0, 20), Color.White);
-            //info = string.Format("FPS: {0}, guy: {1}", frameRate, guy.Position.ToString());
-            //spriteBatch.DrawString(spriteFont, info, new Vector2(0, 40), Color.White);
+            //SpriteBatch spriteBatch = ScreenManager.SpriteBatch;
+            //spriteBatch.Begin();            
+            //spriteBatch.DrawString(spriteFont, camera.Position.ToString(), new Vector2(0, 0), Color.White);
             //spriteBatch.End();
 
             puzzleBoard1.Draw(gameTime);
-            puzzleBoard2.Draw(gameTime);
+            puzzleBoard2.Draw(gameTime);            
 
             // If the game is transitioning on or off, fade it out to black.
             if (TransitionPosition > 0 || _pauseAlpha > 0)
@@ -525,7 +546,6 @@ namespace Junkyard.Screens
 
             frameCounter++;
         }
-
 
         #endregion
     }

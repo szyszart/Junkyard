@@ -116,7 +116,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Animation.cs" />
     <Compile Include="BattleUnit.cs" />
+    <Compile Include="BattleUnitFactories.cs" />
     <Compile Include="Board.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="Light.cs" />
@@ -137,6 +139,7 @@
     <Compile Include="Screens\OptionsMenuScreen.cs" />
     <Compile Include="Screens\PauseMenuScreen.cs" />
     <Compile Include="Screens\PlayerIndexEventArgs.cs" />
+    <Compile Include="Simulation.cs" />
     <Compile Include="Sprite3D.cs" />
     <Compile Include="UIControls.cs" />
   </ItemGroup>

@@ -14,12 +14,14 @@ local staticElements = {
 		yawpitchroll = { 0, -math.pi/2, 0 },
 		scale = { 20.0, 20.0, 1.0 }
 	},
-	lightbulb = {
-		assetName = "Images/Others/lightbulb",
-		pos = { 0, 0, 0 },
-		yawpitchroll = { 0, 0, 0 },
-		scale = { 0.1, 0.1, 1.0 }
-	},
+
+	--lightbulb = {
+		--assetName = "Images/Others/lightbulb",
+		--pos = { 0, 0, 0 },
+		--yawpitchroll = { 0, 0, 0 },
+		--scale = { 0.1, 0.1, 1.0 }
+	--},
+
 	blisko = {
 		assetName = "Images/Others/blisko",
 		pos = { 0.0, 0.0, -1.0 },
