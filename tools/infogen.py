@@ -22,7 +22,7 @@ def process_convert_log(lines):
         width, height = map(int, dims.split('x'))
         geometry.append((x, y, width, height))
     return zip(filenames(lines), geometry)        
-   
+    
 def output_geometry(geometry, tiles_per_row):
     count = 0
     x, y = 0, 0
