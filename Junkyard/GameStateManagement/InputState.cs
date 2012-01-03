@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Input.Touch;
+using Nuclex.Input;
 
 namespace GameStateManagement
 {
@@ -23,12 +24,15 @@ namespace GameStateManagement
     public class InputState
     {
         public const int MaxInputs = 4;
+        public const int MaxGamePads = 8;
 
         public readonly KeyboardState[] CurrentKeyboardStates;
         public readonly GamePadState[] CurrentGamePadStates;
 
         public readonly KeyboardState[] LastKeyboardStates;
         public readonly GamePadState[] LastGamePadStates;
+
+        public readonly InputManager inputManager = new InputManager();
 
         public readonly bool[] GamePadWasConnected;
 
@@ -43,12 +47,12 @@ namespace GameStateManagement
         public InputState()
         {
             CurrentKeyboardStates = new KeyboardState[MaxInputs];
-            CurrentGamePadStates = new GamePadState[MaxInputs];
+            CurrentGamePadStates = new GamePadState[MaxGamePads];
 
             LastKeyboardStates = new KeyboardState[MaxInputs];
-            LastGamePadStates = new GamePadState[MaxInputs];
+            LastGamePadStates = new GamePadState[MaxGamePads];
 
-            GamePadWasConnected = new bool[MaxInputs];
+            GamePadWasConnected = new bool[MaxGamePads];
         }
 
         /// <summary>
@@ -58,11 +62,16 @@ namespace GameStateManagement
         {
             for (int i = 0; i < MaxInputs; i++)
             {
-                LastKeyboardStates[i] = CurrentKeyboardStates[i];
-                LastGamePadStates[i] = CurrentGamePadStates[i];
+                LastKeyboardStates[i] = CurrentKeyboardStates[i];                
 
                 CurrentKeyboardStates[i] = Keyboard.GetState((PlayerIndex)i);
-                CurrentGamePadStates[i] = GamePad.GetState((PlayerIndex)i);
+                //CurrentGamePadStates[i] = GamePad.GetState((PlayerIndex)i);                                
+            }
+
+            for (int i = 0; i < MaxGamePads; i++)
+            {
+                LastGamePadStates[i] = CurrentGamePadStates[i];
+                CurrentGamePadStates[i] = inputManager.GetGamePad((ExtendedPlayerIndex)i).GetState();
 
                 // Keep track of whether a gamepad has ever been
                 // connected, so we can detect if it is unplugged.

@@ -161,17 +161,12 @@ namespace Junkyard.Screens
                     animations.Add(new AnimationData(texture, entry.Value, entry.Key));
                 }
 
-                InitializeScene();
-
-                // once the load has finished, we use ResetElapsedTime to tell the game's
-                // timing mechanism that we have just finished a very long frame, and that
-                // it should not try to catch up.
-                ScreenManager.Game.ResetElapsedTime();
+                InitializeScene();                
 
                 // add the debug puzzleboard control
                 int boardMargin = 15;
-                int boardWidth = (pp.BackBufferWidth - 3 * boardMargin) / 2;
-                int boardHeight = 5 * boardWidth / 6;
+                int boardWidth = (pp.BackBufferWidth - 3 * boardMargin) / 3;
+                int boardHeight = 5 * boardWidth / 7;
 
                 BoardLayoutFinder finder = new BoardLayoutFinder();
 
@@ -192,6 +187,11 @@ namespace Junkyard.Screens
                 puzzleBoard2.LayoutFinder = finder;
                 puzzleBoard2.Board = board2;
                 puzzleBoard2.LayoutMatches += this.LayoutMatched;
+
+                // once the load has finished, we use ResetElapsedTime to tell the game's
+                // timing mechanism that we have just finished a very long frame, and that
+                // it should not try to catch up.
+                ScreenManager.Game.ResetElapsedTime();
             }
         }
 
@@ -215,27 +215,25 @@ namespace Junkyard.Screens
             FrameSprite3D sprite = new FrameSprite3D(animations[currentAnimation].texture, spriteInitialPosition + new Vector3(0.5f, 0f, 0.0f), animations[currentAnimation].dimensions);
             //layer.Drawables.Add(sprite);
             scene.Layers.Add(layer);
-
-            //string[] files = System.IO.Directory.GetFiles("Content/Maps", "*.lua");
+            
             var lua = LuaMachine.state;
             object[] luaResult = lua.DoFile("Content/Maps/test.lua");
             var tbl = (LuaInterface.LuaTable)luaResult[0];
             
             Texture2D texture;
-            // tutaj copypasta, bo jestem juz bardzo zmeczony
+
             foreach (LuaInterface.LuaTable el in tbl.Values)
             {
                 texture = _content.Load<Texture2D>((string)el["assetName"]);
-                var pos = el["pos"] as LuaInterface.LuaTable;                
+                var pos = el["pos"] as LuaInterface.LuaTable;
                 var ypr = el["yawpitchroll"] as LuaInterface.LuaTable;
-                var scale = el["scale"] as LuaInterface.LuaTable;
-
+                var scale = el["scale"] as LuaInterface.LuaTable;                
                 var asset = new Sprite3D(
                     texture,
                     null,
-                    new Vector3((float)(double)pos[1], (float)(double)pos[2], (float)(double)pos[3]),
+                    LuaMachine.TableToVector(pos),
                     Quaternion.CreateFromYawPitchRoll((float)(double)ypr[1], (float)(double)ypr[2], (float)(double)ypr[3]),
-                    new Vector3((float)(double)scale[1], (float)(double)scale[2], (float)(double)scale[3])
+                    LuaMachine.TableToVector(scale)
                     );
 
                 var normalMap = el["normalMap"];
@@ -258,9 +256,9 @@ namespace Junkyard.Screens
                 var asset = new Sprite3D(
                     texture,
                     null,
-                    new Vector3((float)(double)pos[1], (float)(double)pos[2], (float)(double)pos[3]),
+                    LuaMachine.TableToVector(pos),
                     Quaternion.CreateFromYawPitchRoll((float)(double)ypr[1], (float)(double)ypr[2], (float)(double)ypr[3]),
-                    new Vector3((float)(double)scale[1], (float)(double)scale[2], (float)(double)scale[3])
+                    LuaMachine.TableToVector(scale)
                     );
 
                 var normalMap = el["normalMap"];
@@ -329,7 +327,7 @@ namespace Junkyard.Screens
             if (coveredByOtherScreen)
                 _pauseAlpha = Math.Min(_pauseAlpha + 1f / 32, 1);
             else
-                _pauseAlpha = Math.Max(_pauseAlpha - 1f / 32, 0);
+                _pauseAlpha = Math.Max(_pauseAlpha - 1f / 32, 0);           
 
             if (IsActive)
             {
@@ -383,14 +381,14 @@ namespace Junkyard.Screens
                 #region temporary keybord controls                                               
 
                 if (keyboardState.IsKeyDown(Keys.I))
-                    //camera.Translate(new Vector3(0, 0, -.02f));                    
-                    unit.Avatar.Flipped = !unit.Avatar.Flipped;
+                    camera.Translate(new Vector3(0, 0, -.4f));                    
+                    //unit.Avatar.Flipped = !unit.Avatar.Flipped;
                 if (keyboardState.IsKeyDown(Keys.K))
-                    camera.Translate(new Vector3(0, 0, .02f));
+                    camera.Translate(new Vector3(0, 0, .4f));
                 if (keyboardState.IsKeyDown(Keys.J))
-                    camera.Position += new Vector3(-.02f, 0, 0);
+                    camera.Position += new Vector3(-.4f, 0, 0);
                 if (keyboardState.IsKeyDown(Keys.L))
-                    camera.Position += new Vector3(.02f, 0, 0);
+                    camera.Position += new Vector3(.4f, 0, 0);
                 if (keyboardState.IsKeyDown(Keys.Home))
                     camera.Pitch += .01f;
                 if (keyboardState.IsKeyDown(Keys.End))

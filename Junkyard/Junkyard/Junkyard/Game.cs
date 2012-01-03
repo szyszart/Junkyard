@@ -42,7 +42,9 @@ namespace Junkyard
 
             // Create the screen manager component.
             screenManager = new ScreenManager(this);
-            Components.Add(screenManager);    
+            Components.Add(screenManager);
+            
+            this.IsMouseVisible = true;
             
             AddInitialScreens();            
         }
