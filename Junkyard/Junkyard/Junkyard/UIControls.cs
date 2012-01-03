@@ -7,6 +7,7 @@ using System;
 
 namespace Junkyard
 {
+    #region Some generic UI stuff
     public abstract class Widget
     {
         public GameScreen Screen { get; protected set; }
@@ -24,11 +25,18 @@ namespace Junkyard
         public virtual void Update(GameTime gameTime) { }
         public virtual void Draw(GameTime gameTime) { }
     }
+    #endregion
 
-    public delegate void LayoutMatchesHandler(Widget source, string layoutName);
+    #region Puzzle board widget
+
+    public delegate void LayoutMatchesHandler(Widget source, LayoutInstance layout);
+    public delegate void LayoutAcceptedHandler(Widget source, LayoutInstance layout);
 
     class PuzzleBoardWidget : Widget
     {
+        private const int LayoutsEnabledRows = 2;
+
+        public List<LayoutInstance> LayoutsMatched;
         public BoardLayoutFinder LayoutFinder { get; set; }
         public Color CurrentColor { get; set; }
         public Color SelectedColor { get; set; }
@@ -44,13 +52,26 @@ namespace Junkyard
         }
         private bool isSomethingSelected;
         private Point currentTile;
-        private Point selectedTile;
+        private Point selectedTile;        
 
         public Point Position { get; set; }
         public Point Dimensions { get; set; }
         private Texture2D background, border, selected;
         private Texture2D wood, metal, fire, grog;
-        public PuzzleBoard Board { get; set; }
+
+        private PuzzleBoard board;
+        public PuzzleBoard Board
+        {
+            get
+            {
+                return board;
+            }
+            set
+            {
+                board = value;
+                Refresh();
+            }
+        }
 
         private const int tilePaddingX = 8, tilePaddingY = 8;
         private Point tileSize = new Point(101, 101);
@@ -64,6 +85,7 @@ namespace Junkyard
         private bool isFadingOut = false;
 
         public event LayoutMatchesHandler LayoutMatches;
+        public event LayoutAcceptedHandler LayoutAccepted;
 
         public void Left()
         {
@@ -89,6 +111,24 @@ namespace Junkyard
                 currentTile.Y++;
         }
 
+        protected void Refresh()
+        {
+            // try to match a known layout
+            if (LayoutFinder != null)
+            {
+                var layouts = LayoutFinder.Scan(Board);
+                LayoutsMatched.AddRange(layouts);
+
+                if (LayoutMatches != null)
+                {
+                    foreach (LayoutInstance i in layouts)
+                    {
+                        LayoutMatches(this, i);
+                    }
+                }
+            }
+        }
+
         public void Select()
         {
             if (Board.Blocks[currentTile.X, currentTile.Y] == BlockType.Empty)
@@ -98,20 +138,7 @@ namespace Junkyard
             {
                 Board.Swap(selectedTile, currentTile);                
                 isSomethingSelected = false;
-
-                // try to match a known layout
-                if (LayoutFinder != null)
-                {
-                    var layouts = LayoutFinder.Scan(Board);
-                    if (LayoutMatches != null)
-                    {
-                        foreach (string layoutName in layouts)
-                        {
-                            LayoutMatches(this, layoutName);
-                        }
-                    }
-                }
-
+                Refresh();
             }
             else if (!isFadingOut)
             {
@@ -126,17 +153,34 @@ namespace Junkyard
             {
                 fadeOutElapsedTime = 0;
                 isFadingOut = true;
-            }
-        }        
+            }            
+        }
 
-        public PuzzleBoardWidget(GameScreen screen, ContentManager content, Point position, Point dimensions) : base(screen, content)
-        {            
+        public void Accept()
+        {
+            if (LayoutsMatched.Count > 0)
+            {
+                foreach (LayoutInstance i in LayoutsMatched)
+                {
+                    LayoutAccepted(this, i);
+                }
+                LayoutsMatched.Clear();
+                Board.MoveDown(2);
+                Refresh();
+            }
+        }
+
+        public PuzzleBoardWidget(GameScreen screen, ContentManager content, Point position, Point dimensions)
+            : base(screen, content)
+        {
+            LayoutsMatched = new List<LayoutInstance>();
+
             Position = position;            
             Dimensions = dimensions;
             currentTile = new Point(0, 0);
             isSomethingSelected = false;
             SelectedColor = Color.Red;
-            CurrentColor = Color.Yellow;
+            CurrentColor = Color.Yellow;            
         }
 
         protected override void LoadContent()
@@ -165,6 +209,7 @@ namespace Junkyard
                     {
                         isFadingOut = false;
                         Board.Randomize();
+                        Refresh();
                         fadeOut = 1.0f;
                     }
                 }
@@ -221,6 +266,36 @@ namespace Junkyard
                         }
                     }
                 
+                // draw the backgrounds for each matched layout
+                foreach (LayoutInstance i in LayoutsMatched)
+                {
+                    Texture2D sprites = i.Layout.Thumbnails;
+                    if (sprites == null)
+                        continue;
+                    
+                    Point corner = i.Location;
+                    Point size = i.Layout.BlockSize;
+
+                    int h = (i.Layout.Top == null) ? 1 : 2;
+                    int w = i.Layout.Bottom.Length;
+                                       
+                    for (int y = 0; y < h; y++)
+                        for (int x = 0; x < w; x++)
+                        {
+                            var p = i.Layout.ThumbnailBlocks[w * y + x];
+                            Rectangle srcRect = new Rectangle(p.X * size.X, p.Y * size.Y, size.X, size.Y);
+                            Rectangle destRest = new Rectangle(
+                                leftTop.X + (corner.X + x) * (tileSize.X + tilePaddingX),
+                                leftTop.Y + (corner.Y + y) * (tileSize.Y + tilePaddingY),
+                                tileSize.X,
+                                tileSize.Y
+                            );
+                            spriteBatch.Draw(sprites, destRest, srcRect, Color.White * fadeOut);
+                        }
+                                      
+                }
+
+
                 // mark the selected tile
                 Rectangle selectedRect = new Rectangle(
                     leftTop.X + currentTile.X * (tileSize.X + tilePaddingX) + (int)(tileSize.X - selected.Width * selectedScale) / 2,
@@ -252,4 +327,6 @@ namespace Junkyard
             spriteBatch.End();
         }
     }
+
+    #endregion
 }

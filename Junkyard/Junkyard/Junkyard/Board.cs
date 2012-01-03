@@ -1,24 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Junkyard
 {
-    enum BlockType
+    public enum BlockType
     {
         Empty,
+        Other,
         Wood,
         Metal,
         Fire,
-        Grog
+        Grog,        
     }
 
-    class PuzzleBoard
+    public class PuzzleBoard
     {
         private static Random random = new Random();
 
         public BlockType[,] Blocks { get; protected set; }
         public Point Dimensions { get; protected set; }
+        public Player Player { get; set; }
         public PuzzleBoard(int width, int height)
         {
             Blocks = new BlockType[width, height];
@@ -27,11 +30,17 @@ namespace Junkyard
 
         public void Randomize()
         {
+            Randomize(Dimensions.Y);
+        }
+
+        public void Randomize(int upTo)
+        {
             Array values = Enum.GetValues(typeof(BlockType));
-            for (int y = 0; y < Dimensions.Y; y++)
+            for (int y = 0; y < upTo; y++)
                 for (int x = 0; x < Dimensions.X; x++)
                 {
-                    Blocks[x, y] = (BlockType)values.GetValue(random.Next(1, values.Length));
+                    // skip BlockType.Empty and BlockType.Other
+                    Blocks[x, y] = (BlockType)values.GetValue(random.Next(2, values.Length));
                 }
         }
 
@@ -50,49 +59,84 @@ namespace Junkyard
                     Blocks[x, y] = BlockType.Empty;
                 }
         }
+
+        public void MoveDown(int numRows)
+        {
+            if (Dimensions.Y <= 0 || numRows == 0)
+                return;
+
+            if (numRows >= Dimensions.Y) {
+                Clear();
+                return;
+            }
+
+            for (int i = Dimensions.Y - 1; i >= numRows; i--) 
+            {                
+                for (int x = 0; x < Dimensions.X; x++)
+                    Blocks[x, i] = Blocks[x, i - numRows];
+            }
+            
+            Randomize(numRows);
+        }
     }
 
-
-    class LayoutDescription
+    public class LayoutDescription
     {
+        public string Name { get; set; }
         public string Top { get; set; }
         public string Bottom { get; set; }
-        public LayoutDescription(string top, string bottom)
+        public Texture2D Thumbnails { get; set; }
+        public Point BlockSize { get; set; }
+        public Point[] ThumbnailBlocks { get; set; }
+        
+        public LayoutDescription(string name, string top, string bottom)
         {
+            Name = name;
             Top = top;
             Bottom = bottom;
         }
     }
 
+    public class LayoutInstance
+    {
+        public LayoutDescription Layout { get; set; }
+        public Point Location { get; set; }
+        public LayoutInstance(LayoutDescription desc, Point loc)
+        {
+            Layout = desc;
+            Location = loc;
+        }
+    }
+
     class BoardLayoutFinder
     {
-        protected Dictionary<string, LayoutDescription> layouts;
+        protected List<LayoutDescription> layouts;
 
         public BoardLayoutFinder()
         {
-            layouts = new Dictionary<string, LayoutDescription>();
+            layouts = new List<LayoutDescription>();
         }
 
-        public void AddLayout(string name, LayoutDescription desc)
+        public void AddLayout(LayoutDescription desc)
         {
-            layouts.Add(name, desc);
+            layouts.Add(desc);
         }
 
         public void RemoveLayout(string name)
         {
-            layouts.Remove(name);
+            var toRemove = layouts.Find(x => x.Name == name);            
+            layouts.Remove(toRemove);
         }
 
-        public IEnumerable<string> Scan(PuzzleBoard board)
+        public IEnumerable<LayoutInstance> Scan(PuzzleBoard board)
         {
-            List<string> result = new List<string>();
+            List<LayoutInstance> result = new List<LayoutInstance>();
             if (board.Dimensions.Y < 1)
                 return result;
 
             int numFreeBlocks = 2 * board.Dimensions.X;
-            foreach (KeyValuePair<string, LayoutDescription> layout in layouts)
-            {
-                LayoutDescription desc = layout.Value;
+            foreach (LayoutDescription desc in layouts)
+            {                
                 int layoutWidth = desc.Bottom.Length;
                 int layoutHeight = string.IsNullOrEmpty(desc.Top) ? 1 : 2;
                 if (layoutWidth > board.Dimensions.X)
@@ -104,7 +148,8 @@ namespace Junkyard
                     {
                         if (MatchLayout(board, desc, x, board.Dimensions.Y - 1 - y))
                         {
-                            result.Add(layout.Key);
+                            LayoutInstance instance = new LayoutInstance(desc, new Point(x, board.Dimensions.Y - 1 - y));
+                            result.Add(instance);
                             ClearLayout(board, desc, x, board.Dimensions.Y - 1 - y);
                             x += layoutWidth;
                             numFreeBlocks -= layoutWidth * layoutHeight;

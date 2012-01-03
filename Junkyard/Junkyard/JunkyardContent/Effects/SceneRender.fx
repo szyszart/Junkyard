@@ -79,6 +79,8 @@ float sampleShadowMap(float2 UV)
 float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 {
 	float4 texCol = tex2D(TextureSampler, input.UV);
+	//if (texCol.a < AlphaMinValue)
+		//return float4(0.8, 0.8, 0.8, 1);
 	clip(texCol.a - AlphaMinValue);
 
 	float2 texCoord = postProjToScreen(input.ScreenPosition) + halfPixel();

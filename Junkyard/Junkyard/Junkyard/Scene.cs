@@ -140,13 +140,15 @@ namespace Junkyard
 
             shadowDepthEffect.Parameters["View"].SetValue(shadowView);
             shadowDepthEffect.Parameters["Projection"].SetValue(shadowProjection);
-            
+
+            graphicsDevice.RasterizerState = RasterizerState.CullNone;
+            graphicsDevice.DepthStencilState = DepthStencilState.None;
             // draw all objects that cast shadows
             foreach (IDrawable item in scene.Unlayered)
                 item.Draw(shadowDepthEffect);
 
             foreach (Layer layer in scene.Layers)
-                foreach (Sprite3D item in layer.Drawables)
+                foreach (IDrawable item in layer.Drawables)
                     item.Draw(shadowDepthEffect);
         }
 
@@ -165,7 +167,7 @@ namespace Junkyard
                 item.Draw(lightDepthNormalEffect);
 
             foreach (Layer layer in scene.Layers)
-                foreach (Sprite3D item in layer.Drawables)
+                foreach (IDrawable item in layer.Drawables)
                     item.Draw(lightDepthNormalEffect);
         }
 
