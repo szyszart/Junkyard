@@ -254,7 +254,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-<<<<<<< HEAD
 	<Compile Include="Images\Maps\Menelichy\plan01.png">
       <Name>plan01</Name>
       <Importer>TextureImporter</Importer>

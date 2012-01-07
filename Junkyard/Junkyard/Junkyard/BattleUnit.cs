@@ -10,7 +10,7 @@ namespace Junkyard
         public Simulation Simulation { get; set; }
         public Player Player { get; set; }
 
-        public int HP { get; set; }
+        public int Hp { get; set; }
         public bool reallyDead = false;
 
         public ScaledSprite3D Avatar { get; protected set; }
@@ -158,10 +158,10 @@ namespace Junkyard
                     Move();
                 }
 
-                HP -= acumulatedDmg;
+                Hp -= acumulatedDmg;
                 acumulatedDmg = 0;
 
-                if (HP <= 0)
+                if (Hp <= 0)
                 {
                     dying = true;
                 }

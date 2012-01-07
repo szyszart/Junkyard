@@ -121,6 +121,7 @@
     <Compile Include="BattleUnitFactories.cs" />
     <Compile Include="Board.cs" />
     <Compile Include="Camera.cs" />
+    <Compile Include="Entities\Ship.cs" />
     <Compile Include="Light.cs" />
     <Compile Include="LuaMachine.cs" />
     <Compile Include="Postprocess.cs" />

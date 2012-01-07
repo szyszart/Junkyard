@@ -12,6 +12,7 @@ using System;
 using System.Threading;
 using System.IO;
 using System.Collections.Generic;
+using Junkyard.Entities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -63,7 +64,7 @@ namespace Junkyard.Screens
         private PuzzleBoardWidget puzzleBoard2;
 
         private Simulation simulation;
-        private Player player1, player2;
+        private Player player1, player2;        
 
         private BattleUnitFactoryDispatcher factoryDispatcher = new BattleUnitFactoryDispatcher();
 
@@ -112,14 +113,7 @@ namespace Junkyard.Screens
                 Light dirLight = new Light(LightType.Directional, Color.Red);
                 dirLight.Direction = new Vector3(0.45f, -0.15f, 0.875f);
                 dirLight.Position = new Vector3(5.6f, 7.6f, 12.0f);
-                scene.ShadowCastingLights.Add(dirLight);
-
-                player1 = new Player("p1");
-                player1.InitialPosition = new Vector3(-2.5f, -1.1f, -1.25f);
-                player1.Direction = 1.0f;
-                player2 = new Player("p2");
-                player2.InitialPosition = new Vector3(4.2f, -1.1f, -1.25f);
-                player2.Direction = -1.0f;
+                scene.ShadowCastingLights.Add(dirLight);                
 
                 InitializeScene();                
 
@@ -144,7 +138,7 @@ namespace Junkyard.Screens
                 board2.Randomize();
                 puzzleBoard2 = new PuzzleBoardWidget(this, _content, new Point(pp.BackBufferWidth - boardWidth - 2 * boardMargin, boardMargin), new Point(boardWidth, boardHeight));                
                 puzzleBoard2.LayoutFinder = finder;
-                puzzleBoard2.Board = board2;
+                puzzleBoard2.Board = board2;                
 
                 puzzleBoard2.LayoutAccepted += this.LayoutAccepted;
 
@@ -153,22 +147,17 @@ namespace Junkyard.Screens
                 // it should not try to catch up.
                 ScreenManager.Game.ResetElapsedTime();
             }
-        }
-
-        private Point LuaTableToPoint(LuaTable tbl)
-        {
-            return new Point((int)(double)tbl[1], (int)(double)tbl[2]);            
-        }
+        }        
 
         protected void ProcessLayouts(BoardLayoutFinder finder)
         {
-            var lua = LuaMachine.state;
+            var lua = LuaMachine.Instance;
             object[] luaResult = lua.DoFile("Content/Config/layouts.lua");
             var tbl = (LuaTable)luaResult[0];
             
             string thumbnailsPath = (string)tbl["thumbnails"];
             var blockSizeTbl = (LuaTable)tbl["block_size"];
-            Point blockSize = LuaTableToPoint(blockSizeTbl);
+            Point blockSize = LuaMachine.LuaTableToPoint(blockSizeTbl);
 
             Texture2D thumbnailSprites = null;
             if (thumbnailsPath != null)
@@ -193,7 +182,7 @@ namespace Junkyard.Screens
                         foreach (var k in coords.Keys)
                         {
                             var coord = (LuaTable)coords[k];                            
-                            points.Add(LuaTableToPoint(coord));
+                            points.Add(LuaMachine.LuaTableToPoint(coord));
                         }
                         layout.Thumbnails = thumbnailSprites;
                         layout.ThumbnailBlocks = points.ToArray();
@@ -250,8 +239,8 @@ namespace Junkyard.Screens
         }
         
         protected void DoUnitLoading()
-        {              
-            var lua = LuaMachine.state;
+        {
+            var lua = LuaMachine.Instance;
             string unitsPath = Path.Combine(_content.RootDirectory, UnitsDirectory);
             foreach (string dir in Directory.GetDirectories(unitsPath, "*", SearchOption.AllDirectories))
             {
@@ -288,57 +277,36 @@ namespace Junkyard.Screens
 
             // TODO: remove hardcoded paths
             //string[] files = System.IO.Directory.GetFiles("Content/Maps", "*.lua");
-            var lua = LuaMachine.state;
+            var lua = LuaMachine.Instance;
             object[] luaResult = lua.DoFile("Content/Maps/test.lua");
-            var tbl = (LuaInterface.LuaTable)luaResult[0];
+            var tbl = (LuaTable)luaResult[0];                      
 
-            Texture2D texture;            
-
-            foreach (LuaInterface.LuaTable el in tbl.Values)
+            foreach (LuaTable el in tbl.Values)
             {
-                texture = _content.Load<Texture2D>((string)el["assetName"]);
-                var pos = el["pos"] as LuaInterface.LuaTable;
-                var ypr = el["yawpitchroll"] as LuaInterface.LuaTable;
-                var scale = el["scale"] as LuaInterface.LuaTable;                
-                var asset = new Sprite3D(
-                    texture,
-                    null,
-                    LuaMachine.TableToVector(pos),
-                    Quaternion.CreateFromYawPitchRoll((float)(double)ypr[1], (float)(double)ypr[2], (float)(double)ypr[3]),
-                    LuaMachine.TableToVector(scale)
-                    );
-
-                var normalMap = el["normalMap"];
-                if (normalMap != null)
-                    asset.NormalMap = _content.Load<Texture2D>((string)normalMap);
-
+                var asset = LuaMachine.LoadAsset(el, _content);
                 scene.Unlayered.Add(asset);
             }
 
-            var ships = (LuaInterface.LuaTable)luaResult[1];
-            
-            foreach (object key in ships.Keys)
-            {
-                var el = ships[key] as LuaInterface.LuaTable;                
-                texture = _content.Load<Texture2D>((string)el["assetName"]);
-                var pos = el["pos"] as LuaInterface.LuaTable;
-                var ypr = el["yawpitchroll"] as LuaInterface.LuaTable;
-                var scale = el["scale"] as LuaInterface.LuaTable;
+            //var ships = (LuaTable)luaResult["statki"];
+            var ships = (LuaTable)lua["statki"];
 
-                var asset = new Sprite3D(
-                    texture,
-                    null,
-                    LuaMachine.TableToVector(pos),
-                    Quaternion.CreateFromYawPitchRoll((float)(double)ypr[1], (float)(double)ypr[2], (float)(double)ypr[3]),
-                    LuaMachine.TableToVector(scale)
-                    );
+            var ship1 = LuaMachine.LoadAsset((LuaTable)ships["ship1"], _content);
+            scene.Unlayered.Add(ship1);
 
-                var normalMap = el["normalMap"];
-                if (normalMap != null)
-                    asset.NormalMap = _content.Load<Texture2D>((string)normalMap);
+            var ship2 = LuaMachine.LoadAsset((LuaTable)ships["ship2"], _content);
+            scene.Unlayered.Add(ship2);
 
-                scene.Unlayered.Add(asset);
-            }
+            player1 = new Player("p1");
+            player1.InitialPosition = new Vector3(ship1.Position.X, -1.1f, ship1.Position.Z - 0.05f);
+            player1.Direction = 1.0f;
+            player1.Ship = new Ship(ship1.Position);
+            player2 = new Player("p2");
+            player2.InitialPosition = new Vector3(ship2.Position.X, -1.1f, ship2.Position.Z - 0.05f);
+            player2.Direction = -1.0f;
+            player2.Ship = new Ship(ship2.Position);
+
+            simulation.playerOne = player1;
+            simulation.playerTwo = player2;
            
             scene.SimpleLights.InsertRange(0, Lights);
         }
@@ -434,17 +402,17 @@ namespace Junkyard.Screens
             {
                 // Otherwise handle input.                
                 #region temporary keybord controls                                               
+                
+                //if (keyboardState.IsKeyDown(Keys.I))
+                //    camera.Translate(new Vector3(0, 0, -.02f));                    
+                //    //unit.Avatar.Flipped = !unit.Avatar.Flipped;
 
-                if (keyboardState.IsKeyDown(Keys.I))
-                    camera.Translate(new Vector3(0, 0, -.4f));                    
-                    //unit.Avatar.Flipped = !unit.Avatar.Flipped;
-
-                if (keyboardState.IsKeyDown(Keys.K))
-                    camera.Translate(new Vector3(0, 0, .4f));
-                if (keyboardState.IsKeyDown(Keys.J))
-                    camera.Position += new Vector3(-.4f, 0, 0);
-                if (keyboardState.IsKeyDown(Keys.L))
-                    camera.Position += new Vector3(.02f, 0, 0);
+                //if (keyboardState.IsKeyDown(Keys.K))
+                //    camera.Translate(new Vector3(0, 0, .02f));
+                //if (keyboardState.IsKeyDown(Keys.J))
+                //    camera.Position += new Vector3(-.02f, 0, 0);
+                //if (keyboardState.IsKeyDown(Keys.L))
+                //    camera.Position += new Vector3(.02f, 0, 0);
 
                 if (keyboardState.IsKeyDown(Keys.Home))
                     camera.Pitch += .01f;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Junkyard.Entities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -7,19 +8,28 @@ namespace Junkyard
 {
     public class Simulation : IDrawable
     {
-        protected List<BattleUnit> units;
-        protected List<BattleUnit> toRemove;
-        protected Random random = new Random();
+        #region Private Fields
+        private readonly Random _random = new Random();
+        #endregion
+
+        #region Properties
+        protected List<BattleUnit> Units;
+        protected List<BattleUnit> ToRemove;
+
+        public Player playerOne { get; set; }
+        public Player playerTwo { get; set; }
+        
+        #endregion
 
         public Simulation()
         {
-            units = new List<BattleUnit>();
-            toRemove = new List<BattleUnit>();
+            Units = new List<BattleUnit>();
+            ToRemove = new List<BattleUnit>();
         }
 
         public void Add(BattleUnit unit)
         {            
-            units.Add(unit);
+            Units.Add(unit);
             unit.OnSpawn();
         }
 
@@ -27,7 +37,7 @@ namespace Junkyard
         {
             BattleUnit nearest = null;
             float minDist = float.PositiveInfinity;
-            foreach (BattleUnit unit in units)
+            foreach (BattleUnit unit in Units)
             {
                 if (unit.Player == requester.Player || unit.reallyDead)
                     continue;
@@ -43,35 +53,39 @@ namespace Junkyard
 
         public void Attack(BattleUnit who, BattleUnit attacker)
         {
-            if (attacker.HP > 0)
-                who.HP -= 60 + random.Next(48);
+            if (attacker.Hp > 0)
+                who.Hp -= 60 + _random.Next(48);
         }
 
         public void Remove(BattleUnit unit)
         {
             unit.OnRemove();
-            toRemove.Add(unit);
+            ToRemove.Add(unit);
         }
 
         public void Tick(GameTime time)
         {
-            foreach (BattleUnit unit in units)
+            foreach (BattleUnit unit in Units)
             {
                 unit.OnTick(time);
-                // TODO: add a reasonable way of determining whether a unit has reached its destination
-                if (Math.Abs(unit.Avatar.Position.X) > 5.0f)
+                // TODO: add a better way of determining whether a unit has reached its destination
+                Ship EnemyShip = unit.Player == playerOne ? playerTwo.Ship : playerOne.Ship;                   
+
+                if (MathHelper.Distance(EnemyShip.Position.X, unit.Avatar.Position.X) < 0.5f )
+                {
                     Remove(unit);
+                }
             }
 
-            foreach (BattleUnit unit in toRemove)
-                units.Remove(unit);
+            foreach (BattleUnit unit in ToRemove)
+                Units.Remove(unit);
 
-            toRemove.Clear();
+            ToRemove.Clear();
         }
 
         public void Draw(Effect effect)
         {
-            foreach (BattleUnit unit in units)
+            foreach (BattleUnit unit in Units)
             {
                 unit.Draw(effect);
             }
@@ -83,6 +97,7 @@ namespace Junkyard
         public Vector3 InitialPosition { get; set; }
         public string Name { get; set; }
         public float Direction { get; set; }
+        public Ship Ship { get; set; }
         public Player(string name)
         {
             Name = name;

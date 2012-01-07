@@ -182,8 +182,7 @@ namespace Junkyard
         {
             int layoutWidth = desc.Bottom.Length;
             int layoutHeight = (string.IsNullOrEmpty(desc.Top) ? 1 : 2);
-
-            int i = 1;
+           
             for (int y = startY; y < startY + layoutHeight; y++)
                 for (int x = startX; x < startX + layoutWidth; x++)
                 {

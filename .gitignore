@@ -33,3 +33,6 @@ obj/
 
 # Project files
 [Bb]uild/
+
+# Resharper files
+_ReSharper.*/

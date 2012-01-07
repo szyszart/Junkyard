@@ -5,7 +5,7 @@ math.randomseed(os.time())
 
 local losowe = { "but01", "pudla01", "rurka01", "worek01", "worek02", "znak01" }
 
-local staticElements = {
+staticElements = {
 	powietrze = {
 		assetName = "Images/Others/powietrze_male",
 		pos = { 0, 5.0, -20.0 },
@@ -59,7 +59,7 @@ for _,name in pairs(losowe) do
 		}
 end
 
-local statki = {
+statki = {
 	ship1 = {
 		assetName = "Images/Others/kapitan",
 		pos = { -8.0, 0.0, -1.2 },

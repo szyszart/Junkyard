@@ -74,7 +74,7 @@ namespace Junkyard
             Infantry unit = new Infantry();
             unit.Speed = speed;
             unit.AttackRange = attackRange;
-            unit.HP = initialHP;
+            unit.Hp = initialHP;
             unit.Animations = Animations;       
 
             return unit;
