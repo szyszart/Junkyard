@@ -11,14 +11,14 @@ staticElements = {
 		pos = { 0, 5.0, -20.0 },
 		yawpitchroll = { 0, 0, 0 },
 		scale = { 20.02, 11.71, 1.0 }
-	},
+	},	
+	--[[
 	powietrze_tlo = {
 		assetName = "Images/Others/powietrze_male",
 		pos = { 0, -1.2, -21.0 },
 		yawpitchroll = { 0, -math.pi/2, 0 },
 		scale = { 20.0, 20.0, 1.0 }
-	},
-	--[[
+	},		
 
 	--lightbulb = {
 		--assetName = "Images/Others/lightbulb",
@@ -37,23 +37,29 @@ staticElements = {
 	--]]
 	plan01 = {
 		assetName = "Images/Maps/Menelichy/plan01",
-		pos = { 0.0, -1.55, -1.0 },
+		pos = { 0.0, 2.55, -1.0 },
 		yawpitchroll = { 0, 0, 0 },
-		scale = { 10.0, 1.0, 1.0 },
+		scale = { 18.0, 5.0, 1.0 },
 	},
-	oddalenie = {
-		assetName = "Images/Others/oddalenie",
-		pos = { (math.random(100)-40), - 1, -10.0 },
+	plan02 = {
+		assetName = "Images/Maps/Menelichy/plan02",
+		pos = { 0.0, 1.55, -12.0 },
 		yawpitchroll = { 0, 0, 0 },
-		scale = { 20.0, 6.0, 1.0 }
-	}	
+		scale = { 20.0, 10.0, 1.0 },
+	},
+	plan03 = {
+		assetName = "Images/Maps/Menelichy/plan03",
+		pos = { 0.0, 1.55, -17.0 },
+		yawpitchroll = { 0, 0, 0 },
+		scale = { 20.0, 10.0, 1.0 },
+	},	
 }
 
 for _,name in pairs(losowe) do
 	staticElements[name] = 
 		{
 			assetName = "Images/Maps/Menelichy/"..name,
-			pos = { math.random()*20 - 10, math.random() - 2, -1},
+			pos = { math.random()*20 - 10, math.random() - 2, -0.9},
 			yawpitchroll = { 0, 0, 0 },
 			scale = { 0.5, 0.5, 0.5 }
 		}
@@ -62,14 +68,14 @@ end
 statki = {
 	ship1 = {
 		assetName = "Images/Others/kapitan",
-		pos = { -8.0, 0.0, -1.2 },
+		pos = { -7.5, 0.0, -1.2 },
 		yawpitchroll = { 0, 0, 0 },
 		scale = { 2.0, 2.0, 1.0 },
 		normalMap = "Images/Others/kapitan_norm"
 	},
 	ship2 = {
 		assetName = "Images/Others/kapitan",
-		pos = { 8.0, 0.5, -1.2 },
+		pos = { 7.5, 0.5, -1.2 },
 		yawpitchroll = { MathHelper.ToRadians(180), MathHelper.ToRadians(5), 0 },
 		scale = { 2.0, 2.0, 1.0 },
 		normalMap = "Images/Others/kapitan_norm"

@@ -18,6 +18,7 @@ using Microsoft.Xna.Framework.Input.Touch;
 using System.IO;
 using System.IO.IsolatedStorage;
 using System.Xml.Linq;
+
 #endregion
 
 namespace GameStateManagement
@@ -37,7 +38,7 @@ namespace GameStateManagement
         List<GameScreen> screens = new List<GameScreen>();
         List<GameScreen> tempScreensList = new List<GameScreen>();
 
-        InputState input = new InputState();
+        protected InputState input;
 
         SpriteBatch spriteBatch;
         SpriteFont font;
@@ -107,6 +108,8 @@ namespace GameStateManagement
             // we must set EnabledGestures before we can query for them, but
             // we don't assume the game wants to read them.
             TouchPanel.EnabledGestures = GestureType.None;
+
+            input = new InputState(game);
         }
 
 
@@ -115,12 +118,11 @@ namespace GameStateManagement
         /// </summary>
         public override void Initialize()
         {
-            base.Initialize();
+            base.Initialize();                  
 
             isInitialized = true;
         }
-
-
+        
         /// <summary>
         /// Load your graphics content.
         /// </summary>

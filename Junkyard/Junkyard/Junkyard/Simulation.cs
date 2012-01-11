@@ -69,16 +69,18 @@ namespace Junkyard
             {
                 unit.OnTick(time);
                 // TODO: add a better way of determining whether a unit has reached its destination
-                Ship EnemyShip = unit.Player == playerOne ? playerTwo.Ship : playerOne.Ship;                   
+                Player EnemyPlayer = (unit.Player == playerOne) ? playerTwo : playerOne;
+                var EnemyShip = EnemyPlayer.Ship;
 
                 if (MathHelper.Distance(EnemyShip.Position.X, unit.Avatar.Position.X) < 0.5f )
                 {
+                    EnemyPlayer.Hp -= 10;
                     Remove(unit);
                 }
             }
 
             foreach (BattleUnit unit in ToRemove)
-                Units.Remove(unit);
+                Units.Remove(unit);            
 
             ToRemove.Clear();
         }
@@ -98,11 +100,13 @@ namespace Junkyard
         public string Name { get; set; }
         public float Direction { get; set; }
         public Ship Ship { get; set; }
+        public int Hp { get; set; }
         public Player(string name)
         {
             Name = name;
             InitialPosition = Vector3.Zero;
             Direction = 1.0f;
+            Hp = 50;
         }
     }
 }

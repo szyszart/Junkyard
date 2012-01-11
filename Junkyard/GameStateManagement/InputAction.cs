@@ -8,6 +8,7 @@
 #endregion
 
 using System;
+using Nuclex.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 

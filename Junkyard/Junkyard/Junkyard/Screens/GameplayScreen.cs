@@ -21,6 +21,8 @@ using Microsoft.Xna.Framework.Media;
 using Microsoft.Xna.Framework.GamerServices;
 using GameStateManagement;
 using LuaInterface;
+using Nuclex.Input;
+
 #endregion
 
 namespace Junkyard.Screens
@@ -97,7 +99,7 @@ namespace Junkyard.Screens
                 {
                     _content = new ContentManager(ScreenManager.Game.Services, "Content");
                     sceneRenderer = new SimpleSceneRenderer(ScreenManager.GraphicsDevice, _content);
-                    sceneRenderer.RenderShadows = true;
+                    sceneRenderer.RenderShadows = false;
                 }
 
                 PresentationParameters pp = ScreenManager.GraphicsDevice.PresentationParameters;
@@ -140,7 +142,7 @@ namespace Junkyard.Screens
                 puzzleBoard2.LayoutFinder = finder;
                 puzzleBoard2.Board = board2;                
 
-                puzzleBoard2.LayoutAccepted += this.LayoutAccepted;
+                puzzleBoard2.LayoutAccepted += this.LayoutAccepted;                                
 
                 // once the load has finished, we use ResetElapsedTime to tell the game's
                 // timing mechanism that we have just finished a very long frame, and that
@@ -362,6 +364,19 @@ namespace Junkyard.Screens
             if (IsActive)
             {
                 #region temporary stupid logic
+                if (player1.Hp == 0 || player2.Hp == 0)
+                {
+                    var winner = player2.Hp == 0 ? "Player 1" : "Player 2";
+                    string message = winner + "has won!";
+
+                    var battleOverMessage = new BattleOverScreen(message, false);
+
+                    battleOverMessage.Accepted += BattleOverScreenConfirmed;
+                    battleOverMessage.Cancelled+= BattleOverScreenConfirmed;
+
+                    ScreenManager.AddScreen(battleOverMessage, ControllingPlayer);                    
+                }
+
 
                 puzzleBoard1.Update(gameTime);
                 puzzleBoard2.Update(gameTime);
@@ -384,6 +399,8 @@ namespace Junkyard.Screens
             int playerIndex = (int)ControllingPlayer.Value;
 
             KeyboardState keyboardState = input.CurrentKeyboardStates[playerIndex];
+
+            playerIndex = input.CurrentGamePadStates[playerIndex + 4].IsConnected ? playerIndex + 4 : playerIndex;
             GamePadState gamePadState = input.CurrentGamePadStates[playerIndex];
 
             // The game pauses either if the user presses the pause button, or if
@@ -432,9 +449,9 @@ namespace Junkyard.Screens
                 if (input.IsKeyPressed(Keys.J, null, out player))
                     camera.Translate(Vector3.UnitX * -0.1f);
                 if (input.IsKeyPressed(Keys.L, null, out player))
-                    camera.Translate(Vector3.UnitX * 0.1f);
+                    camera.Translate(Vector3.UnitX * 0.1f);                                
 
-                // player 1 temporary controls
+                // player 1 temporary controls)););)
                 if (input.IsNewKeyPress(Keys.W, null, out player))
                     puzzleBoard1.Up();
                 if (input.IsNewKeyPress(Keys.S, null, out player))
@@ -476,6 +493,31 @@ namespace Junkyard.Screens
                     sceneRenderer.RenderShadows = !sceneRenderer.RenderShadows;
                 #endregion
 
+                #region Gamepad controls                               
+
+                Vector2 tsPos = gamePadState.ThumbSticks.Left;
+
+                if (Math.Abs(tsPos.X) > 0.1f || Math.Abs(tsPos.Y) > 0.1f)
+                    camera.Translate(new Vector3(tsPos, 0.0f));
+
+                if (gamePadState.IsButtonDown(Buttons.DPadUp))
+                    puzzleBoard1.Up();
+                if (gamePadState.IsButtonDown(Buttons.DPadDown))
+                    puzzleBoard1.Down();
+                if (gamePadState.IsButtonDown(Buttons.DPadLeft))
+                    puzzleBoard1.Left();
+                if (gamePadState.IsButtonDown(Buttons.DPadRight))
+                    puzzleBoard1.Right();
+
+                if (gamePadState.IsButtonDown(Buttons.X))
+                    puzzleBoard1.Select();
+                if (gamePadState.IsButtonDown(Buttons.Y))
+                    puzzleBoard1.Accept();
+                if (gamePadState.IsButtonDown(Buttons.A))
+                    puzzleBoard1.Randomize();
+
+                #endregion
+
                 simulation.Tick(gameTime);
 
                 // FPS measurement
@@ -496,17 +538,16 @@ namespace Junkyard.Screens
         /// </summary>
         public override void Draw(GameTime gameTime)
         {
-            ScreenManager.GraphicsDevice.Clear(ClearOptions.Target, Color.CornflowerBlue, 0, 0);           
+            ScreenManager.GraphicsDevice.Clear(ClearOptions.Target, Color.CornflowerBlue, 0, 0);
 
             sceneRenderer.Render(scene);
-
             //SpriteBatch spriteBatch = ScreenManager.SpriteBatch;
-            //spriteBatch.Begin();            
+            //spriteBatch.Begin();
             //spriteBatch.DrawString(spriteFont, camera.Position.ToString(), new Vector2(0, 0), Color.White);
             //spriteBatch.End();
 
             puzzleBoard1.Draw(gameTime);
-            puzzleBoard2.Draw(gameTime);            
+            puzzleBoard2.Draw(gameTime);
 
             // If the game is transitioning on or off, fade it out to black.
             if (TransitionPosition > 0 || _pauseAlpha > 0)
@@ -515,10 +556,22 @@ namespace Junkyard.Screens
 
                 ScreenManager.FadeBackBufferToBlack(alpha);
             }
-
             frameCounter++;
         }
 
+        #endregion
+
+        #region Event handlers
+        /// <summary>
+        /// Event handler for when the user selects ok on the "are you sure
+        /// you want to quit" message box. This uses the loading screen to
+        /// transition from the game back to the main menu screen.
+        /// </summary>
+        void BattleOverScreenConfirmed(object sender, PlayerIndexEventArgs e)
+        {
+            LoadingScreen.Load(ScreenManager, false, null, new BackgroundScreen(),
+                                                           new MainMenuScreen());
+        }
         #endregion
     }
 }

@@ -32,7 +32,7 @@ namespace GameStateManagement
         public readonly KeyboardState[] LastKeyboardStates;
         public readonly GamePadState[] LastGamePadStates;
 
-        public readonly InputManager inputManager = new InputManager();
+        public readonly InputManager inputManager;
 
         public readonly bool[] GamePadWasConnected;
 
@@ -44,7 +44,7 @@ namespace GameStateManagement
         /// <summary>
         /// Constructs a new input state.
         /// </summary>
-        public InputState()
+        public InputState(Game game)
         {
             CurrentKeyboardStates = new KeyboardState[MaxInputs];
             CurrentGamePadStates = new GamePadState[MaxGamePads];
@@ -53,6 +53,9 @@ namespace GameStateManagement
             LastGamePadStates = new GamePadState[MaxGamePads];
 
             GamePadWasConnected = new bool[MaxGamePads];
+
+            inputManager = new InputManager(game.Services, game.Window.Handle);
+            game.Components.Add(inputManager);
         }
 
         /// <summary>

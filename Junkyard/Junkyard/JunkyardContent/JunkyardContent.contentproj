@@ -254,7 +254,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-	<Compile Include="Images\Maps\Menelichy\plan01.png">
+    <Compile Include="Images\Maps\Menelichy\plan01.png">
       <Name>plan01</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
@@ -286,7 +286,7 @@
     </Compile>
     <Compile Include="Images\Maps\Menelichy\znak01.png">
       <Name>znak01</Name>
-	  <Importer>TextureImporter</Importer>
+      <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
     <Compile Include="Images\Units\Nuklearni\Infantry\attack.png">
@@ -325,6 +325,25 @@
   <ItemGroup>
     <Compile Include="Images\Units\thumbnails.png">
       <Name>thumbnails</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Images\Menus\loading.png">
+      <Name>loading</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Images\Maps\Menelichy\plan02.png">
+      <Name>plan02</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Images\Maps\Menelichy\plan03.png">
+      <Name>plan03</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

@@ -10,6 +10,7 @@
 #region Using Statements
 using System;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using GameStateManagement;
 #endregion
@@ -36,6 +37,8 @@ namespace Junkyard.Screens
 
         bool loadingIsSlow;
         bool otherScreensAreGone;
+        protected ContentManager _content;
+        private Texture2D _backgroundTexture;
 
         GameScreen[] screensToLoad;
 
@@ -57,7 +60,25 @@ namespace Junkyard.Screens
             TransitionOnTime = TimeSpan.FromSeconds(0.5);
         }
 
+        public override void Activate(bool instancePreserved)
+        {
+            if (!instancePreserved)
+            {
+                if (_content == null)
+                    _content = new ContentManager(ScreenManager.Game.Services, "Content");
 
+                _backgroundTexture = _content.Load<Texture2D>("Images/Menus/loading");
+            }
+        }
+
+
+        /// <summary>
+        /// Unloads graphics content for this screen.
+        /// </summary>
+        public override void Unload()
+        {
+            _content.Unload();
+        }
         /// <summary>
         /// Activates the loading screen.
         /// </summary>
@@ -74,7 +95,7 @@ namespace Junkyard.Screens
                                                             loadingIsSlow,
                                                             screensToLoad);
 
-            screenManager.AddScreen(loadingScreen, controllingPlayer);
+            screenManager.AddScreen(loadingScreen, controllingPlayer);           
         }
 
 
@@ -149,9 +170,13 @@ namespace Junkyard.Screens
                 Vector2 textPosition = (viewportSize - textSize) / 2;
 
                 Color color = Color.White * TransitionAlpha;
-
+                
+                var fullscreen = new Rectangle(0, 0, viewport.Width, viewport.Height);                
+                
                 // Draw the text.
                 spriteBatch.Begin();
+                spriteBatch.Draw(_backgroundTexture, fullscreen,
+                            new Color(TransitionAlpha, TransitionAlpha, TransitionAlpha));
                 spriteBatch.DrawString(font, message, textPosition, color);
                 spriteBatch.End();
             }
