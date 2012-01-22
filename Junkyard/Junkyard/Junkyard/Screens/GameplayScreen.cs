@@ -367,7 +367,7 @@ namespace Junkyard.Screens
                 if (player1.Hp == 0 || player2.Hp == 0)
                 {
                     var winner = player2.Hp == 0 ? "Player 1" : "Player 2";
-                    string message = winner + "has won!";
+                    string message = winner + " has won!";
 
                     var battleOverMessage = new BattleOverScreen(message, false);
 

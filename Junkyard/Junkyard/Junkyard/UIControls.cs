@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
-using System;
 
 namespace Junkyard
 {
@@ -189,7 +188,7 @@ namespace Junkyard
             background = contentManager.Load<Texture2D>("Images/GUI/board_bg");
             border = contentManager.Load<Texture2D>("Images/GUI/board_border");
             selected = contentManager.Load<Texture2D>("Images/GUI/selected");
-            wood = contentManager.Load<Texture2D>("Images/GUI/wood");
+            wood = contentManager.Load<Texture2D>("Images/GUI/meat01");
             metal = contentManager.Load<Texture2D>("Images/GUI/aluminium");
             fire = contentManager.Load<Texture2D>("Images/GUI/fire");
             grog = contentManager.Load<Texture2D>("Images/GUI/grog");            

@@ -37,19 +37,19 @@ staticElements = {
 	--]]
 	plan01 = {
 		assetName = "Images/Maps/Menelichy/plan01",
-		pos = { 0.0, 2.55, -1.0 },
+		pos = { 0.0, 2.35, -1.0 },
 		yawpitchroll = { 0, 0, 0 },
 		scale = { 18.0, 5.0, 1.0 },
 	},
 	plan02 = {
 		assetName = "Images/Maps/Menelichy/plan02",
-		pos = { 0.0, 1.55, -12.0 },
+		pos = { 0.0, 1.25, -17.0 },
 		yawpitchroll = { 0, 0, 0 },
 		scale = { 20.0, 10.0, 1.0 },
 	},
 	plan03 = {
 		assetName = "Images/Maps/Menelichy/plan03",
-		pos = { 0.0, 1.55, -17.0 },
+		pos = { 0.0, 1.55, -20.0 },
 		yawpitchroll = { 0, 0, 0 },
 		scale = { 20.0, 10.0, 1.0 },
 	},	

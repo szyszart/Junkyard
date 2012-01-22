@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using LuaInterface;
 using Microsoft.Xna.Framework;
-
-using LuaInterface;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -12,22 +7,17 @@ namespace Junkyard
 {
     public class LuaMachine
     {
+        #region Private fields
+
         public static Lua Instance = new Lua();
 
-        public static Point LuaTableToPoint(LuaTable tbl)
-        {
-            return new Point((int)(double)tbl[1], (int)(double)tbl[2]);
-        }
-
-        public static Vector3 TableToVector(LuaInterface.LuaTable tbl)
-        {
-            return new Vector3((float)(double)tbl[1], (float)(double)tbl[2], (float)(double)tbl[3]);
-        }
+        #endregion
+        #region Public static methods
 
         public static Sprite3D LoadAsset(LuaTable el, ContentManager content)
         {
-            Texture2D texture =  content.Load<Texture2D>((string)el["assetName"]);
-                           
+            var texture = content.Load<Texture2D>((string) el["assetName"]);
+
             var pos = el["pos"] as LuaTable;
             var ypr = el["yawpitchroll"] as LuaTable;
             var scale = el["scale"] as LuaTable;
@@ -35,15 +25,28 @@ namespace Junkyard
                 texture,
                 null,
                 TableToVector(pos),
-                Quaternion.CreateFromYawPitchRoll((float)(double)ypr[1], (float)(double)ypr[2], (float)(double)ypr[3]),
+                Quaternion.CreateFromYawPitchRoll((float) (double) ypr[1], (float) (double) ypr[2],
+                                                  (float) (double) ypr[3]),
                 TableToVector(scale)
                 );
 
-            var normalMap = el["normalMap"];
+            object normalMap = el["normalMap"];
             if (normalMap != null)
-                asset.NormalMap = content.Load<Texture2D>((string)normalMap);
+                asset.NormalMap = content.Load<Texture2D>((string) normalMap);
 
-            return asset;            
+            return asset;
         }
+
+        public static Point LuaTableToPoint(LuaTable tbl)
+        {
+            return new Point((int) (double) tbl[1], (int) (double) tbl[2]);
+        }
+
+        public static Vector3 TableToVector(LuaTable tbl)
+        {
+            return new Vector3((float) (double) tbl[1], (float) (double) tbl[2], (float) (double) tbl[3]);
+        }
+
+        #endregion
     }
 }

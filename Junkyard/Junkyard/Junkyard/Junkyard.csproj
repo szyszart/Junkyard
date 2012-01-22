@@ -18,6 +18,7 @@
     <XnaOutputType>Game</XnaOutputType>
     <ApplicationIcon>Game.ico</ApplicationIcon>
     <Thumbnail>GameThumbnail.png</Thumbnail>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -30,7 +31,6 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -61,10 +61,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="lua51">
-      <HintPath>bin\x86\lua51.dll</HintPath>
+      <HintPath>..\..\..\..\..\Documents\ii.uni\xna\LuaInterface_2.0.3\luainterface-read-only\Built\lua51.dll</HintPath>
     </Reference>
     <Reference Include="LuaInterface">
-      <HintPath>bin\x86\LuaInterface.dll</HintPath>
+      <HintPath>..\..\..\..\..\Documents\ii.uni\xna\LuaInterface_2.0.3\luainterface-read-only\Built\LuaInterface.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
       <Private>False</Private>
@@ -97,7 +97,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Nuclex.Input">
-      <HintPath>..\..\..\..\Documents\xna\nuclex-framework-r1404-binaries\xna-4.0-x86\Nuclex.Input.dll</HintPath>
+      <HintPath>..\..\..\..\..\Documents\ii.uni\xna\nuclex-framework-r1404-binaries\xna-4.0-x86\Nuclex.Input.dll</HintPath>
     </Reference>
     <Reference Include="System">
       <Private>False</Private>

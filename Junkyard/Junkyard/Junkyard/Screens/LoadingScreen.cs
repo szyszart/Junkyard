@@ -67,7 +67,10 @@ namespace Junkyard.Screens
                 if (_content == null)
                     _content = new ContentManager(ScreenManager.Game.Services, "Content");
 
-                _backgroundTexture = _content.Load<Texture2D>("Images/Menus/loading");
+                var bgs = new [] {"loading", "loading02", "loading03"};
+                var rand = new Random();
+
+                _backgroundTexture = _content.Load<Texture2D>("Images/Menus/"+bgs[rand.Next(0, 3)]);
             }
         }
 

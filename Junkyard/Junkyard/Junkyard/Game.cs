@@ -1,72 +1,92 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.GamerServices;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Media;
-
-using GameStateManagement;
+﻿using GameStateManagement;
 using Junkyard.Screens;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Junkyard
 {
     public class Game : Microsoft.Xna.Framework.Game
     {
-        #region Fields
+        #region Constants
 
-        private const int preferredWidth = 1024, preferredHeight = 768;
-        private GraphicsDeviceManager graphics;       
+        private const int preferredHeight = 768;
+        private const int preferredWidth = 1024;
 
-        ScreenManager screenManager;
-        ScreenFactory screenFactory;
-        
         #endregion
 
+        #region Private fields
+
+        private readonly GraphicsDeviceManager graphics;
+
+        private readonly ScreenFactory screenFactory;
+        private readonly ScreenManager screenManager;
+
+        #endregion
+
+        #region Ctors
+
         public Game()
-        {            
+        {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            graphics.PreferredBackBufferWidth = preferredWidth;
-            graphics.PreferredBackBufferHeight = preferredHeight;
-                      
+            //graphics.PreferredBackBufferWidth = preferredWidth;
+            //graphics.PreferredBackBufferHeight = preferredHeight;
+
+            graphics.PreparingDeviceSettings += graphics_PreparingDeviceSettings;
+            graphics.IsFullScreen = true;
             // disable FPS throttling
             graphics.SynchronizeWithVerticalRetrace = false;
             IsFixedTimeStep = false;
 
             screenFactory = new ScreenFactory();
-            Services.AddService(typeof(IScreenFactory), screenFactory);            
+            Services.AddService(typeof (IScreenFactory), screenFactory);
 
             // Create the screen manager component.
             screenManager = new ScreenManager(this);
             Components.Add(screenManager);
-            
-            this.IsMouseVisible = true;
-            
-            AddInitialScreens();            
+
+            IsMouseVisible = true;
+
+            AddInitialScreens();
         }
 
-        private void AddInitialScreens()
+        #endregion
+
+        #region Event handlers
+
+        private void graphics_PreparingDeviceSettings(object sender, PreparingDeviceSettingsEventArgs e)
         {
-            // Activate the first screens.
-            screenManager.AddScreen(new BackgroundScreen(), null);
-            screenManager.AddScreen(new MainMenuScreen(), null);           
-        }        
+            DisplayMode displayMode = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode;
+            e.GraphicsDeviceInformation.PresentationParameters.BackBufferFormat = displayMode.Format;
+            e.GraphicsDeviceInformation.PresentationParameters.BackBufferWidth = displayMode.Width;
+            e.GraphicsDeviceInformation.PresentationParameters.BackBufferHeight = displayMode.Height;
+        }
+
+        #endregion
+
+        #region Overrides
+
+        protected override void Draw(GameTime gameTime)
+        {
+            GraphicsDevice.Clear(Color.CornflowerBlue);
+            base.Draw(gameTime);
+        }
 
         protected override void UnloadContent()
         {
         }
 
-        #region Draw and update      
+        #endregion
 
-        protected override void Draw(GameTime gameTime)
+        #region Private methods
+
+        private void AddInitialScreens()
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);         
-            base.Draw(gameTime);            
+            // Activate the first screens.
+            screenManager.AddScreen(new BackgroundScreen(), null);
+            screenManager.AddScreen(new MainMenuScreen(), null);
         }
+
         #endregion
     }
 }
