@@ -45,7 +45,9 @@ namespace Junkyard
             screenManager = new ScreenManager(this);
             Components.Add(screenManager);
 
-            IsMouseVisible = true;
+
+
+            IsMouseVisible = false;
 
             AddInitialScreens();
         }

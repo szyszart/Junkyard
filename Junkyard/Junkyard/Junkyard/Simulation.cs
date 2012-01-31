@@ -8,36 +8,53 @@ namespace Junkyard
 {
     public class Simulation : IDrawable
     {
-        #region Private Fields
-        private readonly Random _random = new Random();
-        #endregion
+        #region Private fields
 
-        #region Properties
-        protected List<BattleUnit> Units;
         protected List<BattleUnit> ToRemove;
+        private readonly Random _random = new Random();
 
-        public Player playerOne { get; set; }
-        public Player playerTwo { get; set; }
-        
+        private readonly List<BattleUnit> _units;
+
         #endregion
+        #region Properties
+
+        public List<BattleUnit> Units
+        {
+            get { return _units; }
+        }
+
+        public Player PlayerOne { get; set; }
+        public Player PlayerTwo { get; set; }
+
+        #endregion
+        #region Ctors
 
         public Simulation()
         {
-            Units = new List<BattleUnit>();
+            _units = new List<BattleUnit>();
             ToRemove = new List<BattleUnit>();
         }
 
+        #endregion
+        #region Public methods
+
         public void Add(BattleUnit unit)
-        {            
-            Units.Add(unit);
+        {
+            _units.Add(unit);
             unit.OnSpawn();
+        }
+
+        public void Attack(BattleUnit who, BattleUnit attacker)
+        {
+            if (attacker.Hp > 0)
+                who.Hp -= 60 + _random.Next(48);
         }
 
         public BattleUnit GetNearestFoe(BattleUnit requester)
         {
             BattleUnit nearest = null;
             float minDist = float.PositiveInfinity;
-            foreach (BattleUnit unit in Units)
+            foreach (BattleUnit unit in _units)
             {
                 if (unit.Player == requester.Player || unit.reallyDead)
                     continue;
@@ -51,12 +68,6 @@ namespace Junkyard
             return nearest;
         }
 
-        public void Attack(BattleUnit who, BattleUnit attacker)
-        {
-            if (attacker.Hp > 0)
-                who.Hp -= 60 + _random.Next(48);
-        }
-
         public void Remove(BattleUnit unit)
         {
             unit.OnRemove();
@@ -65,42 +76,53 @@ namespace Junkyard
 
         public void Tick(GameTime time)
         {
-            foreach (BattleUnit unit in Units)
+            foreach (BattleUnit unit in _units)
             {
                 unit.OnTick(time);
                 // TODO: add a better way of determining whether a unit has reached its destination
-                Player EnemyPlayer = (unit.Player == playerOne) ? playerTwo : playerOne;
-                var EnemyShip = EnemyPlayer.Ship;
+                Player enemyPlayer = (unit.Player == PlayerOne) ? PlayerTwo : PlayerOne;
+                Ship enemyShip = enemyPlayer.Ship;
 
-                if (MathHelper.Distance(EnemyShip.Position.X, unit.Avatar.Position.X) < 0.5f )
+                if (MathHelper.Distance(enemyShip.Position.X, unit.Avatar.Position.X) < 0.6f)
                 {
-                    EnemyPlayer.Hp -= 10;
+                    enemyPlayer.Hp -= 10;
                     Remove(unit);
                 }
             }
 
             foreach (BattleUnit unit in ToRemove)
-                Units.Remove(unit);            
+                _units.Remove(unit);
 
             ToRemove.Clear();
         }
 
+        #endregion
+        #region IDrawable Members
+
         public void Draw(Effect effect)
         {
-            foreach (BattleUnit unit in Units)
+            foreach (BattleUnit unit in _units)
             {
                 unit.Draw(effect);
             }
         }
+
+        #endregion
     }
 
     public class Player
     {
+        #region Properties
+
+        public float Direction { get; set; }
+        public int Hp { get; set; }
         public Vector3 InitialPosition { get; set; }
         public string Name { get; set; }
-        public float Direction { get; set; }
         public Ship Ship { get; set; }
-        public int Hp { get; set; }
+
+        #endregion
+        #region Ctors
+
         public Player(string name)
         {
             Name = name;
@@ -108,5 +130,7 @@ namespace Junkyard
             Direction = 1.0f;
             Hp = 50;
         }
+
+        #endregion
     }
 }

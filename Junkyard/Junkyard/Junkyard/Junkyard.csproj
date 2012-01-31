@@ -121,9 +121,19 @@
     <Compile Include="BattleUnitFactories.cs" />
     <Compile Include="Board.cs" />
     <Compile Include="Camera.cs" />
+    <Compile Include="CameraManager.cs" />
     <Compile Include="Entities\Ship.cs" />
+    <Compile Include="Helpers\GeneralHelper.cs" />
     <Compile Include="Light.cs" />
     <Compile Include="LuaMachine.cs" />
+    <Compile Include="Particles\DustParticleSystem.cs" />
+    <Compile Include="Particles\ExplosionParticleSystem.cs" />
+    <Compile Include="Particles\ExplosionSmokeParticleSystem.cs" />
+    <Compile Include="Particles\JunkParticleSystem.cs" />
+    <Compile Include="Particles\Particle.cs" />
+    <Compile Include="Particles\ParticleManager.cs" />
+    <Compile Include="Particles\ParticleSystem.cs" />
+    <Compile Include="Particles\SmokePlumeParticleSystem.cs" />
     <Compile Include="Postprocess.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
@@ -132,7 +142,7 @@
     <Compile Include="ScreenFactory.cs" />
     <Compile Include="Screens\BackgroundScreen.cs" />
     <Compile Include="Screens\BattleOverScreen.cs" />
-    <Compile Include="Screens\GameplayScreen.cs" />
+    <Compile Include="Screens\GamePlayScreen.cs" />
     <Compile Include="Screens\LoadingScreen.cs" />
     <Compile Include="Screens\MainMenuScreen.cs" />
     <Compile Include="Screens\MenuEntry.cs" />
@@ -141,6 +151,7 @@
     <Compile Include="Screens\OptionsMenuScreen.cs" />
     <Compile Include="Screens\PauseMenuScreen.cs" />
     <Compile Include="Screens\PlayerIndexEventArgs.cs" />
+    <Compile Include="Screens\SplashScreen.cs" />
     <Compile Include="Simulation.cs" />
     <Compile Include="Sprite3D.cs" />
     <Compile Include="UIControls.cs" />
