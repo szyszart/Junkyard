@@ -34,8 +34,8 @@ namespace Junkyard
 
             // Krzysztoff has an ancient computer and that's why he needs manual resolution settings
             // If you are lucky enough to have a more powerful machine, feel free to uncomment the following lines.
-            //graphics.PreparingDeviceSettings += graphics_PreparingDeviceSettings;
-            //graphics.IsFullScreen = true;
+            graphics.PreparingDeviceSettings += graphics_PreparingDeviceSettings;
+            graphics.IsFullScreen = true;
 
             // disable FPS throttling
             graphics.SynchronizeWithVerticalRetrace = false;
