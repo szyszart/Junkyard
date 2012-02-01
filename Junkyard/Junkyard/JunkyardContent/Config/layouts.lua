@@ -5,6 +5,25 @@ local layouts = {
 	block_size = {512, 512},
 
 	{
+		top			= "ggmm",
+		bottom		= "mmgg",
+		unit		= "menel_boar",
+		thumbnails	= {
+			{0, 0}, {0, 0}, {0, 0}, {0, 0}, 
+			{0, 0}, {0, 0}, {0, 0}, {0, 0},
+		}
+	},	
+
+	{
+		top			= nil,
+		bottom		= "ww",
+		unit		= "menele_ranged",
+		thumbnails	= {
+			{0, 0}, {0, 0}
+		}
+	},	
+
+	{
 		top			= nil,
 		bottom		= "ff",
 		unit		= "nuklearni_infantry",

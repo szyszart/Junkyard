@@ -61,10 +61,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="lua51">
-      <HintPath>..\..\..\..\..\Documents\ii.uni\xna\LuaInterface_2.0.3\luainterface-read-only\Built\lua51.dll</HintPath>
+      <HintPath>..\..\..\..\..\Różne\lua51.dll</HintPath>
     </Reference>
     <Reference Include="LuaInterface">
-      <HintPath>..\..\..\..\..\Documents\ii.uni\xna\LuaInterface_2.0.3\luainterface-read-only\Built\LuaInterface.dll</HintPath>
+      <HintPath>..\..\..\..\..\Różne\LuaInterface.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
       <Private>False</Private>
@@ -97,7 +97,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Nuclex.Input">
-      <HintPath>..\..\..\..\..\Documents\ii.uni\xna\nuclex-framework-r1404-binaries\xna-4.0-x86\Nuclex.Input.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Downloads\Nuclex Framework Binaries R1242\xna-4.0-x86\Nuclex.Input.dll</HintPath>
     </Reference>
     <Reference Include="System">
       <Private>False</Private>

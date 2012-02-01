@@ -58,8 +58,7 @@ namespace Junkyard.Screens
         private FreeCamera camera;
         private ContentManager content;
 
-        private TimeSpan elapsedTime = TimeSpan.Zero;
-        private readonly BattleUnitFactoryDispatcher factoryDispatcher = new BattleUnitFactoryDispatcher();
+        private TimeSpan elapsedTime = TimeSpan.Zero;        
         private int frameCounter;
         private int frameRate;
         private Player player1, player2;
@@ -101,11 +100,11 @@ namespace Junkyard.Screens
 
         private void LayoutAccepted(Widget src, LayoutInstance instance)
         {
-            var widget = (PuzzleBoardWidget) src;
+            PuzzleBoardWidget widget = (PuzzleBoardWidget)src;
             Player who = widget.Board.Player;
 
             // spawn a new unit
-            BattleUnit unit = factoryDispatcher.Create(instance.Layout.Name);
+            BattleUnit unit = simulation.Spawn(instance.Layout.Name);
             unit.Simulation = simulation;
             unit.Player = who;
             unit.Avatar.Position = who.InitialPosition;
@@ -319,6 +318,73 @@ namespace Junkyard.Screens
                 if (keyboardState.IsKeyDown(Keys.X))
                     camera.Yaw -= .01f;
 
+                // DEBUG, remove ASAP
+                //if (input.IsNewKeyPress(Keys.D1, null, out player))
+                //{
+                //    BattleUnit unit = (BattleUnit)simulation.Spawn("menele_ranged");
+                //    unit.Simulation = simulation;
+                //    unit.Player = player1;
+                //    unit.Avatar.Position = player1.InitialPosition;
+                //    simulation.Add(unit);
+                //}
+                //if (input.IsNewKeyPress(Keys.D2, null, out player))
+                //{
+                //    BattleUnit unit = (BattleUnit)simulation.Spawn("menel_ram");
+                //    unit.Simulation = simulation;
+                //    unit.Player = player1;
+                //    unit.Avatar.Position = player1.InitialPosition;
+                //    simulation.Add(unit);
+                //}
+                //if (input.IsNewKeyPress(Keys.D3, null, out player))
+                //{
+                //    BattleUnit unit = (BattleUnit)simulation.Spawn("menele_ranged");
+                //    unit.Simulation = simulation;
+                //    unit.Player = player2;
+                //    unit.Avatar.Position = player2.InitialPosition;
+                //    simulation.Add(unit);
+                //}
+                //if (input.IsNewKeyPress(Keys.D4, null, out player))
+                //{
+                //    BattleUnit unit = (BattleUnit)simulation.Spawn("menel_infantry");
+                //    unit.Simulation = simulation;
+                //    unit.Player = player2;
+                //    unit.Avatar.Position = player2.InitialPosition;
+                //    simulation.Add(unit);
+                //}
+                //if (input.IsNewKeyPress(Keys.D5, null, out player))
+                //{
+                //    BattleUnit unit = (BattleUnit)simulation.Spawn("menel_boar");
+                //    unit.Simulation = simulation;
+                //    unit.Player = player1;
+                //    unit.Avatar.Position = player1.InitialPosition + 6 * Vector3.UnitY;
+                //    simulation.Add(unit);
+                //}
+                //if (input.IsNewKeyPress(Keys.D6, null, out player))
+                //{
+                //    BattleUnit unit = (BattleUnit)simulation.Spawn("menel_boar");
+                //    unit.Simulation = simulation;
+                //    unit.Player = player2;
+                //    unit.Avatar.Position = player2.InitialPosition + 6 * Vector3.UnitY;
+                //    simulation.Add(unit);
+                //}
+                //if (input.IsNewKeyPress(Keys.D7, null, out player))
+                //{
+                //    BattleUnit unit = (BattleUnit)simulation.Spawn("menel_infantry");
+                //    unit.Simulation = simulation;
+                //    unit.Player = player2;
+                //    unit.Avatar.Position = player2.InitialPosition;
+                //    simulation.Add(unit);
+                //}
+                //if (input.IsNewKeyPress(Keys.D8, null, out player))
+                //{
+                //    BattleUnit unit = (BattleUnit)simulation.Spawn("menel_infantry");
+                //    unit.Simulation = simulation;
+                //    unit.Player = player2;
+                //    unit.Avatar.Position = player2.InitialPosition;
+                //    simulation.Add(unit);
+                //}
+                // END OF DEBUG
+
                 if (keyboardState.IsKeyDown(Keys.Delete))
                     sceneRenderer.RenderShadows = !sceneRenderer.RenderShadows;
 
@@ -423,6 +489,12 @@ namespace Junkyard.Screens
             {
                 case "infantry":
                     return new InfantryFactory();
+                case "projectile":
+                    return new ProjectileFactory();
+                case "ranged":
+                    return new RangedFactory();
+                case "meteor":
+                    return new MeteorFactory();
                 default:
                     throw new ArgumentException("Unknown battle unit type.");
             }
@@ -449,16 +521,17 @@ namespace Junkyard.Screens
                     BattleUnitFactory factory = CreateFactory(kind);
                     factory.Params = unitData;
                     factory.Animations = animations;
-                    factoryDispatcher.RegisterFactory(name, factory);
+                    simulation.FactoryDispatcher.RegisterFactory(name, factory);                    
                 }
             }
         }
 
         protected void InitializeScene()
         {
-            DoUnitLoading();
-
             simulation = new Simulation();
+            simulation.GroundLevel = -0.4f;
+
+            DoUnitLoading();            
 
             var layer = new Layer(-1.25f);
             layer.Drawables.Add(simulation);
@@ -486,8 +559,8 @@ namespace Junkyard.Screens
             Sprite3D ship2 = LuaMachine.LoadAsset((LuaTable) ships["ship2"], content);
             scene.Unlayered.Add(ship2);
 
-            player1 = new Player("p1");
-            player1.InitialPosition = new Vector3(ship1.Position.X, -1.1f, ship1.Position.Z - 0.05f);
+            player1 = new Player("p1");            
+            player1.InitialPosition = new Vector3(ship1.Position.X , -1.1f, ship1.Position.Z - 0.05f);            
             player1.Direction = 1.0f;
             player1.Ship = new Ship(ship1.Position);
             player2 = new Player("p2");
