@@ -10,7 +10,7 @@ staticElements = {
 		assetName = "Images/Others/powietrze_male",
 		pos = { 0, 5.0, -20.0 },
 		yawpitchroll = { 0, 0, 0 },
-		scale = { 20.02, 11.71, 1.0 }
+		scale = { 22.02, 22.02, 1.0 }
 	},	
 	--[[
 	powietrze_tlo = {
@@ -37,7 +37,7 @@ staticElements = {
 	--]]
 	plan01 = {
 		assetName = "Images/Maps/Menelichy/plan01",
-		pos = { 0.0, 2.35, -1.0 },
+		pos = { 0.0, 2.31, -1.0 },
 		yawpitchroll = { 0, 0, 0 },
 		scale = { 18.0, 5.0, 1.0 },
 	},

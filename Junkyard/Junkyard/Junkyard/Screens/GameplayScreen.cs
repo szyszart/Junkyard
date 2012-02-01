@@ -36,6 +36,7 @@ namespace Junkyard.Screens
 
         private const int DUST_PARTICLE_SYSTEM = 1;
         private const string UnitsDirectory = "Images\\Units";
+        private readonly Vector3 SCENE_CENTER = new Vector3(-2.2f, 0.36f, 3.8f);
 
         #endregion
         #region Private fields
@@ -54,8 +55,10 @@ namespace Junkyard.Screens
 
         private readonly InputAction _pauseAction;
         private float _pauseAlpha;
-
+        
         private FreeCamera camera;
+        private CameraManager _cameraManager;        
+
         private ContentManager content;
 
         private TimeSpan elapsedTime = TimeSpan.Zero;
@@ -81,7 +84,7 @@ namespace Junkyard.Screens
         /// </summary>
         public GamePlayScreen()
         {
-            TransitionOnTime = TimeSpan.FromSeconds(1.5);
+            TransitionOnTime = TimeSpan.FromSeconds(3);
             TransitionOffTime = TimeSpan.FromSeconds(0.5);
 
             _pauseAction = new InputAction(
@@ -131,12 +134,12 @@ namespace Junkyard.Screens
 
                 PresentationParameters pp = ScreenManager.GraphicsDevice.PresentationParameters;
                 float aspectRatio = pp.BackBufferWidth/(float) pp.BackBufferHeight;
-                camera = new FreeCamera(new Vector3(-2.2f, 0.36f, 3.8f), MathHelper.ToRadians(45), aspectRatio, 0.1f,
+                camera = new FreeCamera(SCENE_CENTER, MathHelper.ToRadians(45), aspectRatio, 0.1f,
                                         1000.0f);
 
-                scene = new Scene();
-                scene.Camera = camera;
-                scene.Ambient = new Color(0.7f, 0.7f, 0.7f);
+                _cameraManager = new CameraManager(camera);                
+                
+                scene = new Scene {CameraManager = _cameraManager, Ambient = new Color(0.7f, 0.7f, 0.7f)};                
 
                 spriteFont = content.Load<SpriteFont>("Fonts/sample");
 
@@ -175,8 +178,8 @@ namespace Junkyard.Screens
 
                 puzzleBoard2.LayoutAccepted += LayoutAccepted;
 
-                _particleManager = new ParticleManager((Game)ScreenManager.Game);
-                _particleManager.AddSystem<DustParticleSystem>(DUST_PARTICLE_SYSTEM, 10, player1.InitialPosition.Z + 0.1f);
+                //_particleManager = new ParticleManager((Game)ScreenManager.Game);
+                //_particleManager.AddSystem<DustParticleSystem>(DUST_PARTICLE_SYSTEM, 10, player1.InitialPosition.Z + 0.1f);                
 
                 // once the load has finished, we use ResetElapsedTime to tell the game's
                 // timing mechanism that we have just finished a very long frame, and that
@@ -347,18 +350,7 @@ namespace Junkyard.Screens
                     puzzleBoard1.Randomize();
 
                 #endregion
-                simulation.Tick(gameTime);
-
-                // FPS measurement
-                elapsedTime += gameTime.ElapsedGameTime;
-                if (elapsedTime > TimeSpan.FromSeconds(1))
-                {
-                    elapsedTime -= TimeSpan.FromSeconds(1);
-                    frameRate = frameCounter;
-                    frameCounter = 0;
-                }
-
-                camera.Update();
+                simulation.Tick(gameTime);                                
             }
         }
 
@@ -403,15 +395,47 @@ namespace Junkyard.Screens
                 ScreenManager.AddScreen(battleOverMessage, ControllingPlayer);
             }
 
+            #endregion
             puzzleBoard1.Update(gameTime);
             puzzleBoard2.Update(gameTime);
+            
+            _cameraManager.Update(gameTime);
+
+            //timer section
+            // FPS measurement
+            elapsedTime += gameTime.ElapsedGameTime;
+            if (elapsedTime > TimeSpan.FromSeconds(1))
+            {
+                elapsedTime -= TimeSpan.FromSeconds(1);
+                frameRate = frameCounter;
+                frameCounter = 0;
+                //call callback
+                CameraDirector();
+            }
+            //camera.Update();
 
             //if (gameTime.TotalGameTime.Milliseconds % 259 == 0 && simulation.Units.Count != 0)
             //{
             //    var randomUnitPos = simulation.Units.GetRandomElement().Avatar.Position;
             //    _particleManager[DUST_PARTICLE_SYSTEM].AddParticles(new Vector2(randomUnitPos.X,randomUnitPos.Y));
             //}
-            #endregion
+            
+        }
+
+        private void CameraDirector()
+        {            
+            if (_cameraManager.State == CameraState.Static && simulation.Units.Count == 0)
+            {
+                _cameraManager.Goto(SCENE_CENTER);
+            }
+            else if (simulation.Units.Count != 0)
+            {
+                var avatar = simulation.Units.GetRandomElement().Avatar;
+                if (avatar != null)
+                {
+                    _cameraManager.Follow(avatar, GeneralHelper.RandomBetween(0.2f, 0.5f));
+                }                    
+            }
         }
 
         #endregion
@@ -499,6 +523,8 @@ namespace Junkyard.Screens
             simulation.PlayerTwo = player2;
 
             scene.SimpleLights.InsertRange(0, Lights);
+            _cameraManager.Camera.Position = new Vector3(ship1.Position.X, camera.Position.Y, camera.Position.Z);
+            _cameraManager.Goto(new Vector3(ship2.Position.X, camera.Position.Y, camera.Position.Z), 0.2f);
         }
 
         protected Dictionary<string, Animation> ProcessAnimations(string unitName, LuaTable data)

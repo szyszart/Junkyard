@@ -27,7 +27,7 @@ namespace Junkyard
 
     class Scene
     {
-        public Camera Camera { get; set; }
+        public CameraManager CameraManager { get; set; }
         public List<Light> ShadowCastingLights;
         public List<Light> SimpleLights;
         public List<Postprocess> Postprocesses { get; protected set; }
@@ -159,8 +159,8 @@ namespace Junkyard
             graphicsDevice.DepthStencilState = DepthStencilState.Default;
             graphicsDevice.BlendState = BlendState.Opaque;
 
-            lightDepthNormalEffect.Parameters["View"].SetValue(scene.Camera.View);
-            lightDepthNormalEffect.Parameters["Projection"].SetValue(scene.Camera.Projection);
+            lightDepthNormalEffect.Parameters["View"].SetValue(scene.CameraManager.Camera.View);
+            lightDepthNormalEffect.Parameters["Projection"].SetValue(scene.CameraManager.Camera.Projection);
 
             // draw all objects that should be lit by a point light
             foreach (IDrawable item in scene.Unlayered)
@@ -173,7 +173,7 @@ namespace Junkyard
 
         private void DrawPointLights(Scene scene)
         {
-            Matrix viewProjection = scene.Camera.View * scene.Camera.Projection;
+            Matrix viewProjection = scene.CameraManager.Camera.View * scene.CameraManager.Camera.Projection;
             Matrix invViewProjection = Matrix.Invert(viewProjection);            
             lightPointEffect.Parameters["InvViewProjection"].SetValue(invViewProjection);
             
@@ -193,11 +193,11 @@ namespace Junkyard
 
                 Matrix wvp = Matrix.CreateScale(light.Attenuation) * Matrix.CreateTranslation(light.Position) * viewProjection;
                 lightPointEffect.Parameters["WorldViewProjection"].SetValue(wvp);
-                lightPointEffect.Parameters["CameraPosition"].SetValue(scene.Camera.Position);
+                lightPointEffect.Parameters["CameraPosition"].SetValue(scene.CameraManager.Camera.Position);
                 lightPointEffect.Parameters["LightColor"].SetValue(light.Color.ToVector3());
                 lightPointEffect.Parameters["LightPosition"].SetValue(light.Position);
                 lightPointEffect.Parameters["LightAttenuation"].SetValue(light.Attenuation);
-                float dist = Vector3.Distance(scene.Camera.Position, light.Position);
+                float dist = Vector3.Distance(scene.CameraManager.Camera.Position, light.Position);
 
                 if (dist < light.Attenuation)
                     graphicsDevice.RasterizerState = RasterizerState.CullClockwise;
@@ -220,8 +220,8 @@ namespace Junkyard
             
             sceneRenderEffect.Parameters["LightTexture"].SetValue(lightPointTarget);
             sceneRenderEffect.Parameters["AmbientColor"].SetValue(scene.Ambient.ToVector3());
-            sceneRenderEffect.Parameters["View"].SetValue(scene.Camera.View);
-            sceneRenderEffect.Parameters["Projection"].SetValue(scene.Camera.Projection);
+            sceneRenderEffect.Parameters["View"].SetValue(scene.CameraManager.Camera.View);
+            sceneRenderEffect.Parameters["Projection"].SetValue(scene.CameraManager.Camera.Projection);
             if (RenderShadows && scene.ShadowCastingLights.Count != 0)
             {
                 // TODO: use the matrices that have already been computed

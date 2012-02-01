@@ -29,11 +29,11 @@ namespace Junkyard
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            //graphics.PreferredBackBufferWidth = preferredWidth;
-            //graphics.PreferredBackBufferHeight = preferredHeight;
+            graphics.PreferredBackBufferWidth = preferredWidth;
+            graphics.PreferredBackBufferHeight = preferredHeight;
 
-            graphics.PreparingDeviceSettings += graphics_PreparingDeviceSettings;
-            graphics.IsFullScreen = true;
+            //graphics.PreparingDeviceSettings += graphics_PreparingDeviceSettings;
+            //graphics.IsFullScreen = true;
             // disable FPS throttling
             graphics.SynchronizeWithVerticalRetrace = false;
             IsFixedTimeStep = false;
@@ -44,8 +44,6 @@ namespace Junkyard
             // Create the screen manager component.
             screenManager = new ScreenManager(this);
             Components.Add(screenManager);
-
-
 
             IsMouseVisible = false;
 
