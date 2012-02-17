@@ -43,13 +43,13 @@ staticElements = {
 	},
 	plan02 = {
 		assetName = "Images/Maps/Menelichy/plan02",
-		pos = { 0.0, 1.25, -17.0 },
+		pos = { 0.0, 1.15, -17.0 },
 		yawpitchroll = { 0, 0, 0 },
 		scale = { 20.0, 10.0, 1.0 },
 	},
 	plan03 = {
 		assetName = "Images/Maps/Menelichy/plan03",
-		pos = { 0.0, 1.55, -20.0 },
+		pos = { 0.0, 1.4, -19.0 },
 		yawpitchroll = { 0, 0, 0 },
 		scale = { 20.0, 10.0, 1.0 },
 	},	
@@ -81,5 +81,6 @@ statki = {
 		normalMap = "Images/Others/kapitan_norm"
 	}
 }
+initialY = -1.1;
 	
-return staticElements,statki
+return staticElements,statki,initialY

@@ -93,6 +93,8 @@ namespace Junkyard
                 if (!unit.reallyDead)
                     unit.OnTick(time);
 
+                if (unit.Stealth) continue;
+
                 // TODO: add a better way of determining whether a unit has reached its destination
                 Player enemyPlayer = (unit.Player == PlayerOne) ? PlayerTwo : PlayerOne;
                 Ship enemyShip = enemyPlayer.Ship;

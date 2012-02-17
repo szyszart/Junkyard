@@ -30,10 +30,10 @@ namespace Junkyard.Screens
         int selectedEntry = 0;
         string menuTitle;
 
-        InputAction menuUp;
-        InputAction menuDown;
-        InputAction menuSelect;
-        InputAction menuCancel;
+        protected InputAction menuUp;
+        protected InputAction menuDown;
+        protected InputAction menuSelect;
+        protected InputAction menuCancel;
 
         #endregion
 
@@ -223,7 +223,7 @@ namespace Junkyard.Screens
         public override void Draw(GameTime gameTime)
         {
             // make sure our entries are in the right place before we draw them
-            UpdateMenuEntryLocations();
+            //UpdateMenuEntryLocations();
 
             GraphicsDevice graphics = ScreenManager.GraphicsDevice;
             SpriteBatch spriteBatch = ScreenManager.SpriteBatch;

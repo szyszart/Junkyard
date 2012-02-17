@@ -104,6 +104,10 @@ namespace Junkyard.Screens
             this.text = text;
         }
 
+        public MenuEntry()
+        {
+            
+        }
 
         #endregion
 

@@ -94,7 +94,7 @@ namespace Junkyard.Screens
             if (!instancePreserved)
             {
                 ContentManager content = ScreenManager.Game.Content;
-                gradientTexture = content.Load<Texture2D>("Images/Menus/gradient");
+                gradientTexture = content.Load<Texture2D>("Images/Menus/puste");
             }
         }
 
@@ -157,21 +157,22 @@ namespace Junkyard.Screens
             Vector2 textPosition = (viewportSize - textSize) / 2;
 
             // The background includes a border somewhat larger than the text itself.
-            const int hPad = 32;
-            const int vPad = 16;
+            const int hPad = 32*9;
+            const int vPad = 16*6;
 
             Rectangle backgroundRectangle = new Rectangle((int)textPosition.X - hPad,
                                                           (int)textPosition.Y - vPad,
-                                                          (int)textSize.X + hPad * 2,
-                                                          (int)textSize.Y + vPad * 2);
+                                                          (int)textSize.X*2 + hPad,
+                                                          (int)textSize.Y*2 + vPad);
 
             // Fade the popup alpha during transitions.
-            Color color = Color.White * TransitionAlpha;
+            Color color = Color.Black * TransitionAlpha;
+            Color fColor = Color.White*TransitionAlpha;
 
             spriteBatch.Begin();
 
             // Draw the background rectangle.
-            spriteBatch.Draw(gradientTexture, backgroundRectangle, color);
+            spriteBatch.Draw(gradientTexture, backgroundRectangle, fColor);
 
             // Draw the message box text.
             spriteBatch.DrawString(font, message, textPosition, color);

@@ -58,7 +58,7 @@ namespace Junkyard.Screens
                 if (content == null)
                     content = new ContentManager(ScreenManager.Game.Services, "Content");
 
-                backgroundTexture = content.Load<Texture2D>("Images/Menus/background");
+                backgroundTexture = content.Load<Texture2D>("Images/Menus/niebo");
             }
         }
 
@@ -98,7 +98,7 @@ namespace Junkyard.Screens
         {
             SpriteBatch spriteBatch = ScreenManager.SpriteBatch;
             Viewport viewport = ScreenManager.GraphicsDevice.Viewport;
-            Rectangle fullscreen = new Rectangle(0, 0, viewport.Width, viewport.Height);
+            Rectangle fullscreen = new Rectangle(0, 0, 3*viewport.Width, 3*viewport.Height);
 
             spriteBatch.Begin();
 

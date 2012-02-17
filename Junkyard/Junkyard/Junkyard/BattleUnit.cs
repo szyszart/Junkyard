@@ -330,7 +330,7 @@ namespace Junkyard
     class Meteor : AnimatedBattleUnit
     {
         private static Random random = new Random();
-        private const float MaxOffset = 4.0f;
+        private const float MaxOffset = 2.0f;
 
         public Vector3 Velocity { get; set; }
         public Vector3 Acceleration { get; set; }

@@ -74,6 +74,7 @@ namespace Junkyard.Screens
         private Simulation simulation;
         private SpriteFont spriteFont;
         private ParticleManager _particleManager;
+        private string _map;
 
         #endregion
         #region Ctors
@@ -81,15 +82,16 @@ namespace Junkyard.Screens
         /// <summary>
         /// Constructor.
         /// </summary>
-        public GamePlayScreen()
+        public GamePlayScreen(string map)
         {
-            TransitionOnTime = TimeSpan.FromSeconds(3);
+            TransitionOnTime = TimeSpan.FromSeconds(4);
             TransitionOffTime = TimeSpan.FromSeconds(0.5);
 
             _pauseAction = new InputAction(
                 new[] {Buttons.Start, Buttons.Back},
                 new[] {Keys.Escape},
                 true);
+            _map = map;
         }
 
         #endregion
@@ -145,8 +147,7 @@ namespace Junkyard.Screens
                 var dirLight = new Light(LightType.Directional, Color.Red);
                 dirLight.Direction = new Vector3(0.45f, -0.15f, 0.875f);
                 dirLight.Position = new Vector3(5.6f, 7.6f, 12.0f);
-                scene.ShadowCastingLights.Add(dirLight);                
-
+                scene.ShadowCastingLights.Add(dirLight);                                
                 InitializeScene();               
 
                 // add the debug puzzleboard control
@@ -322,70 +323,38 @@ namespace Junkyard.Screens
                     camera.Yaw -= .01f;
 
                 // DEBUG, remove ASAP
-                //if (input.IsNewKeyPress(Keys.D1, null, out player))
-                //{
-                //    BattleUnit unit = (BattleUnit)simulation.Spawn("menele_ranged");
-                //    unit.Simulation = simulation;
-                //    unit.Player = player1;
-                //    unit.Avatar.Position = player1.InitialPosition;
-                //    simulation.Add(unit);
-                //}
-                //if (input.IsNewKeyPress(Keys.D2, null, out player))
-                //{
-                //    BattleUnit unit = (BattleUnit)simulation.Spawn("menel_ram");
-                //    unit.Simulation = simulation;
-                //    unit.Player = player1;
-                //    unit.Avatar.Position = player1.InitialPosition;
-                //    simulation.Add(unit);
-                //}
-                //if (input.IsNewKeyPress(Keys.D3, null, out player))
-                //{
-                //    BattleUnit unit = (BattleUnit)simulation.Spawn("menele_ranged");
-                //    unit.Simulation = simulation;
-                //    unit.Player = player2;
-                //    unit.Avatar.Position = player2.InitialPosition;
-                //    simulation.Add(unit);
-                //}
-                //if (input.IsNewKeyPress(Keys.D4, null, out player))
-                //{
-                //    BattleUnit unit = (BattleUnit)simulation.Spawn("menel_infantry");
-                //    unit.Simulation = simulation;
-                //    unit.Player = player2;
-                //    unit.Avatar.Position = player2.InitialPosition;
-                //    simulation.Add(unit);
-                //}
-                //if (input.IsNewKeyPress(Keys.D5, null, out player))
-                //{
-                //    BattleUnit unit = (BattleUnit)simulation.Spawn("menel_boar");
-                //    unit.Simulation = simulation;
-                //    unit.Player = player1;
-                //    unit.Avatar.Position = player1.InitialPosition + 6 * Vector3.UnitY;
-                //    simulation.Add(unit);
-                //}
-                //if (input.IsNewKeyPress(Keys.D6, null, out player))
-                //{
-                //    BattleUnit unit = (BattleUnit)simulation.Spawn("menel_boar");
-                //    unit.Simulation = simulation;
-                //    unit.Player = player2;
-                //    unit.Avatar.Position = player2.InitialPosition + 6 * Vector3.UnitY;
-                //    simulation.Add(unit);
-                //}
-                //if (input.IsNewKeyPress(Keys.D7, null, out player))
-                //{
-                //    BattleUnit unit = (BattleUnit)simulation.Spawn("menel_infantry");
-                //    unit.Simulation = simulation;
-                //    unit.Player = player2;
-                //    unit.Avatar.Position = player2.InitialPosition;
-                //    simulation.Add(unit);
-                //}
-                //if (input.IsNewKeyPress(Keys.D8, null, out player))
-                //{
-                //    BattleUnit unit = (BattleUnit)simulation.Spawn("menel_infantry");
-                //    unit.Simulation = simulation;
-                //    unit.Player = player2;
-                //    unit.Avatar.Position = player2.InitialPosition;
-                //    simulation.Add(unit);
-                //}
+                if (input.IsNewKeyPress(Keys.D1, null, out player))
+                {
+                    SpawnUnit("menele_ranged", player1, Vector3.Zero);
+                }
+                if (input.IsNewKeyPress(Keys.D2, null, out player))
+                {
+                    SpawnUnit("menel_ram", player1, Vector3.Zero);
+                }
+                if (input.IsNewKeyPress(Keys.D3, null, out player))
+                {
+                    SpawnUnit("menele_ranged", player2, Vector3.Zero);
+                }
+                if (input.IsNewKeyPress(Keys.D4, null, out player))
+                {
+                    SpawnUnit("menel_infantry", player2, Vector3.Zero);
+                }
+                if (input.IsNewKeyPress(Keys.D5, null, out player))
+                {
+                    SpawnUnit("menel_boar", player1, 6*Vector3.UnitY);                    
+                }
+                if (input.IsNewKeyPress(Keys.D6, null, out player))
+                {
+                    SpawnUnit("menel_boar", player2, 6 * Vector3.UnitY);
+                }
+                if (input.IsNewKeyPress(Keys.D7, null, out player))
+                {
+                    SpawnUnit("menel_infantry", player2, Vector3.Zero);
+                }
+                if (input.IsNewKeyPress(Keys.D8, null, out player))
+                {
+                    SpawnUnit("menel_ram", player2, Vector3.Zero);
+                }
                 // END OF DEBUG
 
                 if (keyboardState.IsKeyDown(Keys.Delete))
@@ -418,6 +387,15 @@ namespace Junkyard.Screens
                 #endregion
                 simulation.Tick(gameTime);                                
             }
+        }
+
+        private void SpawnUnit(string name, Player player, Vector3 offsetV)
+        {
+            BattleUnit unit = simulation.Spawn(name);
+            unit.Simulation = simulation;
+            unit.Player = player;
+            unit.Avatar.Position = player.InitialPosition + offsetV;
+            simulation.Add(unit);
         }
 
 
@@ -496,11 +474,13 @@ namespace Junkyard.Screens
             }
             else if (simulation.Units.Count != 0)
             {
-                var avatar = simulation.Units.GetRandomElement().Avatar;
+                var unit = simulation.Units.GetRandomElement();
+                
+                var avatar = unit.reallyDead ? null : unit.Avatar;
                 if (avatar != null)
                 {
                     _cameraManager.Follow(avatar, GeneralHelper.RandomBetween(0.2f, 0.5f));
-                }                    
+                }
             }
         }
 
@@ -552,8 +532,7 @@ namespace Junkyard.Screens
 
         protected void InitializeScene()
         {
-            simulation = new Simulation();
-            simulation.GroundLevel = -0.4f;
+            simulation = new Simulation();            
 
             DoUnitLoading();            
 
@@ -565,7 +544,7 @@ namespace Junkyard.Screens
             // TODO: remove hardcoded paths
             //string[] files = System.IO.Directory.GetFiles("Content/Maps", "*.lua");
             Lua lua = LuaMachine.Instance;
-            object[] luaResult = lua.DoFile("Content/Maps/test.lua");
+            object[] luaResult = lua.DoFile("Content/Maps/"+_map);
             var tbl = (LuaTable) luaResult[0];
 
             foreach (LuaTable el in tbl.Values)
@@ -583,14 +562,23 @@ namespace Junkyard.Screens
             Sprite3D ship2 = LuaMachine.LoadAsset((LuaTable) ships["ship2"], content);
             scene.Unlayered.Add(ship2);
 
-            player1 = new Player("p1");            
-            player1.InitialPosition = new Vector3(ship1.Position.X , -1.1f, ship1.Position.Z - 0.05f);            
-            player1.Direction = 1.0f;
-            player1.Ship = new Ship(ship1.Position);
-            player2 = new Player("p2");
-            player2.InitialPosition = new Vector3(ship2.Position.X, -1.1f, ship2.Position.Z - 0.05f);
-            player2.Direction = -1.0f;
-            player2.Ship = new Ship(ship2.Position);
+            var initialPositionY = (float) (double) lua["initialY"];
+            simulation.GroundLevel = initialPositionY+0.5f;
+
+            player1 = new Player("p1")
+                          {
+                              InitialPosition =
+                                  new Vector3(ship1.Position.X, initialPositionY, ship1.Position.Z - 0.05f),
+                              Direction = 1.0f,
+                              Ship = new Ship(ship1.Position)
+                          };
+            player2 = new Player("p2")
+                          {
+                              InitialPosition =
+                                  new Vector3(ship2.Position.X, initialPositionY, ship2.Position.Z - 0.05f),
+                              Direction = -1.0f,
+                              Ship = new Ship(ship2.Position)
+                          };
 
             simulation.PlayerOne = player1;
             simulation.PlayerTwo = player2;

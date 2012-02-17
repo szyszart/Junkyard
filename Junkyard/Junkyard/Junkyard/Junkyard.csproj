@@ -122,6 +122,7 @@
     <Compile Include="Board.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="CameraManager.cs" />
+    <Compile Include="Controls\Meter.cs" />
     <Compile Include="Entities\Ship.cs" />
     <Compile Include="Helpers\GeneralHelper.cs" />
     <Compile Include="Light.cs" />
