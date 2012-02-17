@@ -207,8 +207,11 @@ namespace Junkyard
                     if (fadeOut <= 0.0f)
                     {
                         isFadingOut = false;
-                        Board.Randomize();
+
+                        Board.Randomize();                        
+                        LayoutsMatched.Clear();
                         Refresh();
+
                         fadeOut = 1.0f;
                     }
                 }

@@ -7,16 +7,19 @@ using Microsoft.Xna.Framework.Graphics;
 namespace Junkyard
 {
     public class Simulation : IDrawable
-    {
+    {        
         #region Private fields
 
-        protected List<BattleUnit> ToRemove;
+        private List<BattleUnit> ToRemove;
+        private List<BattleUnit> ToAdd;
         private readonly Random _random = new Random();
 
         private readonly List<BattleUnit> _units;
 
         #endregion
         #region Properties
+        
+        public BattleUnitFactoryDispatcher FactoryDispatcher { get; protected set; }
 
         public List<BattleUnit> Units
         {
@@ -26,6 +29,8 @@ namespace Junkyard
         public Player PlayerOne { get; set; }
         public Player PlayerTwo { get; set; }
 
+        public float GroundLevel { get; set; }
+
         #endregion
         #region Ctors
 
@@ -33,20 +38,27 @@ namespace Junkyard
         {
             _units = new List<BattleUnit>();
             ToRemove = new List<BattleUnit>();
+            ToAdd = new List<BattleUnit>();
+            FactoryDispatcher = new BattleUnitFactoryDispatcher();
+            GroundLevel = 0;
         }
 
         #endregion
-        #region Public methods
+        #region Public methods               
+
+        public BattleUnit Spawn(string kind)
+        {
+            return FactoryDispatcher.Create(kind);
+        }        
 
         public void Add(BattleUnit unit)
         {
-            _units.Add(unit);
-            unit.OnSpawn();
+            ToAdd.Add(unit);
         }
 
         public void Attack(BattleUnit who, BattleUnit attacker)
         {
-            if (attacker.Hp > 0)
+            if (attacker.Stealth || attacker.Hp > 0)
                 who.Hp -= 60 + _random.Next(48);
         }
 
@@ -56,7 +68,7 @@ namespace Junkyard
             float minDist = float.PositiveInfinity;
             foreach (BattleUnit unit in _units)
             {
-                if (unit.Player == requester.Player || unit.reallyDead)
+                if (unit.Player == requester.Player || unit.reallyDead || unit.Stealth)
                     continue;
                 float curDist = Vector3.Distance(unit.Avatar.Position, requester.Avatar.Position);
                 if (curDist < minDist)
@@ -66,7 +78,7 @@ namespace Junkyard
                 }
             }
             return nearest;
-        }
+        }      
 
         public void Remove(BattleUnit unit)
         {
@@ -78,11 +90,14 @@ namespace Junkyard
         {
             foreach (BattleUnit unit in _units)
             {
-                unit.OnTick(time);
+                if (!unit.reallyDead)
+                    unit.OnTick(time);
+
                 // TODO: add a better way of determining whether a unit has reached its destination
                 Player enemyPlayer = (unit.Player == PlayerOne) ? PlayerTwo : PlayerOne;
                 Ship enemyShip = enemyPlayer.Ship;
 
+                // TODO: add a Y coordinate check
                 if (MathHelper.Distance(enemyShip.Position.X, unit.Avatar.Position.X) < 0.6f)
                 {
                     enemyPlayer.Hp -= 10;
@@ -90,9 +105,17 @@ namespace Junkyard
                 }
             }
 
+            foreach (BattleUnit unit in ToAdd)
+            {
+                _units.Add(unit);
+                unit.OnSpawn();
+            }
+
+            ToAdd.Clear();
+
             foreach (BattleUnit unit in ToRemove)
                 _units.Remove(unit);
-
+            
             ToRemove.Clear();
         }
 

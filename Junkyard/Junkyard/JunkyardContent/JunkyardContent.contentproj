@@ -97,11 +97,27 @@
       <Importer>FontDescriptionImporter</Importer>
       <Processor>FontDescriptionProcessor</Processor>
     </Compile>
+    <None Include="Images\Units\Menele\Boar\anim.lua">
+      <Name>anim</Name>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Images\Units\Menele\Infantry\anim.lua">
       <Name>anim</Name>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Images\Units\Menele\Junkie\anim.lua">
+      <Name>anim</Name>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Images\Units\Menele\Ram\anim.lua">
+      <Name>anim</Name>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Images\Units\Menele\Ranged\anim.lua">
+      <Name>anim</Name>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Images\Units\Menele\Ranged\Projectile\anim.lua">
       <Name>anim</Name>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -396,6 +412,61 @@
     </Compile>
     <Compile Include="Images\Menus\ster.png">
       <Name>ster</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Images\Units\Menele\Ranged\attack.png">
+      <Name>attack</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Images\Units\Menele\Ranged\dying.png">
+      <Name>dying</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Images\Units\Menele\Ranged\walk.png">
+      <Name>walk</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Images\Units\Menele\Boar\fly.png">
+      <Name>fly</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Images\Units\Menele\Ranged\Projectile\fly.png">
+      <Name>fly</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Images\Units\Menele\Boar\dying.png">
+      <Name>dying</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Images\Units\Menele\Ram\attack.png">
+      <Name>attack</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Images\Units\Menele\Ram\dying.png">
+      <Name>dying</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Images\Units\Menele\Ram\walk.png">
+      <Name>walk</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

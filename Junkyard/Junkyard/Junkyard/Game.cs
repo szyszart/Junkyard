@@ -29,11 +29,14 @@ namespace Junkyard
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            graphics.PreferredBackBufferWidth = preferredWidth;
-            graphics.PreferredBackBufferHeight = preferredHeight;
+            //graphics.PreferredBackBufferWidth = preferredWidth;
+            //graphics.PreferredBackBufferHeight = preferredHeight;
 
-            //graphics.PreparingDeviceSettings += graphics_PreparingDeviceSettings;
-            //graphics.IsFullScreen = true;
+            // Krzysztoff has an ancient computer and that's why he needs manual resolution settings
+            // If you are lucky enough to have a more powerful machine, feel free to uncomment the following lines.
+            graphics.PreparingDeviceSettings += graphics_PreparingDeviceSettings;
+            graphics.IsFullScreen = true;
+
             // disable FPS throttling
             graphics.SynchronizeWithVerticalRetrace = false;
             IsFixedTimeStep = false;
