@@ -13,3 +13,11 @@ Tworzony za pomocą XNA Framework.
 * **3.12.2012** Generalny refactoring
 * **17.12.2012** Przygotowanie testów, poprawianie błędów i źle zaimplementowanych funkcjonalności
 * **31.12.2012** Dokończenie menu głównego, menu opcji, ustawienia sterowania, obsługa wielu rozdzielczości
+
+- - -
+
+### Technologie:
+* C#
+* .NET Framework 4.0
+* XNA Framework
+* Lua
