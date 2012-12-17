@@ -9,7 +9,14 @@ namespace Junkyard.Helpers
         #region Private fields
 
         private static readonly Random _random = new Random();
-        public static Random Random { get { return _random; } }
+
+        #endregion
+        #region Properties
+
+        public static Random Random
+        {
+            get { return _random; }
+        }
 
         #endregion
         #region Public static methods

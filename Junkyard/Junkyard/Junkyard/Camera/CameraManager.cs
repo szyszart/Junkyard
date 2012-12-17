@@ -1,4 +1,5 @@
 ﻿using System;
+using Junkyard.Camera;
 using Microsoft.Xna.Framework;
 
 namespace Junkyard
@@ -16,8 +17,8 @@ namespace Junkyard
     {
         #region Private fields
 
-        private float _progress;
         private ScaledSprite3D _objectToFollow;
+        private float _progress;
 
         #endregion
         #region Properties
@@ -48,7 +49,7 @@ namespace Junkyard
             {
                 throw new ArgumentNullException("objectToFollow");
             }
-            if (_objectToFollow == objectToFollow || (State & CameraState.Goto) == CameraState.Goto) return; 
+            if (_objectToFollow == objectToFollow || (State & CameraState.Goto) == CameraState.Goto) return;
 
             _objectToFollow = objectToFollow;
             Target = new Vector3(objectToFollow.Position.X, Camera.Position.Y, Camera.Position.Z);
@@ -79,7 +80,7 @@ namespace Junkyard
                     Target = new Vector3(_objectToFollow.Position.X, Camera.Position.Y, Camera.Position.Z);
                     goto case CameraState.Goto;
                 case CameraState.Goto:
-                    {                                                                                                   
+                    {
                         var egt = (float) gameTime.ElapsedGameTime.TotalSeconds;
                         egt = egt == .0f ? 1.0f/33.0f : egt;
                         _progress += Speed*egt;
@@ -91,8 +92,8 @@ namespace Junkyard
                         }
                     }
                     break;
-                case CameraState.Follow:                    
-                    Camera.Position = new Vector3(_objectToFollow.Position.X, Camera.Position.Y, Camera.Position.Z);                    
+                case CameraState.Follow:
+                    Camera.Position = new Vector3(_objectToFollow.Position.X, Camera.Position.Y, Camera.Position.Z);
                     break;
             }
 
@@ -103,7 +104,7 @@ namespace Junkyard
         #region Private methods
 
         private void Goto()
-        {            
+        {
             Origin = Origin = Camera.Position;
             _progress = .0f;
         }

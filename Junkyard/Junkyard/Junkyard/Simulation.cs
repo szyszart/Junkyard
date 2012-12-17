@@ -1,35 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
 using Junkyard.Entities;
+using Junkyard.Entities.Units;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Junkyard
 {
     public class Simulation : IDrawable
-    {        
+    {
         #region Private fields
 
-        private List<BattleUnit> ToRemove;
-        private List<BattleUnit> ToAdd;
+        private readonly List<BattleUnit> ToAdd;
+        private readonly List<BattleUnit> ToRemove;
         private readonly Random _random = new Random();
 
         private readonly List<BattleUnit> _units;
 
         #endregion
         #region Properties
-        
+
         public BattleUnitFactoryDispatcher FactoryDispatcher { get; protected set; }
+        public float GroundLevel { get; set; }
+
+        public Player PlayerOne { get; set; }
+        public Player PlayerTwo { get; set; }
 
         public List<BattleUnit> Units
         {
             get { return _units; }
         }
-
-        public Player PlayerOne { get; set; }
-        public Player PlayerTwo { get; set; }
-
-        public float GroundLevel { get; set; }
 
         #endregion
         #region Ctors
@@ -44,12 +44,7 @@ namespace Junkyard
         }
 
         #endregion
-        #region Public methods               
-
-        public BattleUnit Spawn(string kind)
-        {
-            return FactoryDispatcher.Create(kind);
-        }        
+        #region Public methods
 
         public void Add(BattleUnit unit)
         {
@@ -78,12 +73,17 @@ namespace Junkyard
                 }
             }
             return nearest;
-        }      
+        }
 
         public void Remove(BattleUnit unit)
         {
             unit.OnRemove();
             ToRemove.Add(unit);
+        }
+
+        public BattleUnit Spawn(string kind)
+        {
+            return FactoryDispatcher.Create(kind);
         }
 
         public void Tick(GameTime time)
@@ -117,7 +117,7 @@ namespace Junkyard
 
             foreach (BattleUnit unit in ToRemove)
                 _units.Remove(unit);
-            
+
             ToRemove.Clear();
         }
 
@@ -130,30 +130,6 @@ namespace Junkyard
             {
                 unit.Draw(effect);
             }
-        }
-
-        #endregion
-    }
-
-    public class Player
-    {
-        #region Properties
-
-        public float Direction { get; set; }
-        public int Hp { get; set; }
-        public Vector3 InitialPosition { get; set; }
-        public string Name { get; set; }
-        public Ship Ship { get; set; }
-
-        #endregion
-        #region Ctors
-
-        public Player(string name)
-        {
-            Name = name;
-            InitialPosition = Vector3.Zero;
-            Direction = 1.0f;
-            Hp = 50;
         }
 
         #endregion

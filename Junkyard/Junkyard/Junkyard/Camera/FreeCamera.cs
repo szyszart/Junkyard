@@ -1,37 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 
-namespace Junkyard
+namespace Junkyard.Camera
 {
-    abstract class Camera
+    internal class FreeCamera : PerspectiveCamera
     {
-        public virtual Matrix View { get; protected set; }
-        public virtual Matrix Projection { get; protected set; }
-        public virtual Vector3 Position { get; set; }
-        public virtual void Update() 
-        {
-        }
-    }
-
-    abstract class PerspectiveCamera : Camera
-    {
-        public PerspectiveCamera(float fieldOfView, float aspectRatio, float nearPlane, float farPlane)
-        {
-            Projection = Matrix.CreatePerspectiveFieldOfView(fieldOfView, aspectRatio, nearPlane, farPlane);
-        }
-    }
-
-    class FreeCamera : PerspectiveCamera
-    {
-        public float Yaw { get; set; }
-        public float Pitch { get; set; }
-        public float Roll { get; set; }
+        #region Private fields
 
         private Vector3 target;
         private Vector3 translation;
+
+        #endregion
+        #region Properties
+
+        public float Pitch { get; set; }
+        public float Roll { get; set; }
+        public float Yaw { get; set; }
+
+        #endregion
+        #region Ctors
 
         public FreeCamera(Vector3 position, float fieldOfView, float aspectRatio, float nearPlane, float farPlane)
             : base(fieldOfView, aspectRatio, nearPlane, farPlane)
@@ -40,6 +26,9 @@ namespace Junkyard
             Position = position;
             translation = Vector3.Zero;
         }
+
+        #endregion
+        #region Overrides
 
         public override void Update()
         {
@@ -56,9 +45,14 @@ namespace Junkyard
             View = Matrix.CreateLookAt(Position, target, up);
         }
 
+        #endregion
+        #region Public methods
+
         public void Translate(Vector3 t)
         {
             translation += t;
-        }        
+        }
+
+        #endregion
     }
 }

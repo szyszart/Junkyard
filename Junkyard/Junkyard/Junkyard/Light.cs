@@ -1,24 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 
 namespace Junkyard
 {
-    enum LightType
+    internal enum LightType
     {
         Directional,
         Point
     }
 
-    class Light
+    internal class Light
     {
-        public LightType Type { get; set; }
-        public Color Color { get; set; }        
-        public Vector3 Position { get; set; }
-        public Vector3 Direction { get; set; }
+        #region Properties
+
         public float Attenuation { get; set; }
+        public Color Color { get; set; }
+        public Vector3 Direction { get; set; }
+        public Vector3 Position { get; set; }
+        public LightType Type { get; set; }
+
+        #endregion
+        #region Ctors
 
         public Light(LightType type, Color color, Vector3 pos, Vector3 dir, float att)
         {
@@ -34,5 +35,7 @@ namespace Junkyard
             Type = type;
             Color = color;
         }
+
+        #endregion
     }
 }

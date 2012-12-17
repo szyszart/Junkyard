@@ -4,17 +4,16 @@ using Microsoft.Xna.Framework.Content;
 
 namespace Junkyard.Controls
 {
-    class Meter : Widget
+    internal class Meter : Widget
     {
+        #region Ctors
+
         public Meter(GameScreen screen, ContentManager content, Point position) : base(screen, content)
         {
-
         }
 
-        protected override void LoadContent()
-        {
-            base.LoadContent();
-        }
+        #endregion
+        #region Overrides
 
         public override void Draw(GameTime gameTime)
         {
@@ -25,5 +24,12 @@ namespace Junkyard.Controls
         {
             base.Update(gameTime);
         }
+
+        protected override void LoadContent()
+        {
+            base.LoadContent();
+        }
+
+        #endregion
     }
 }

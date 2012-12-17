@@ -14,7 +14,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using GameStateManagement;
+using Junkyard.Animations;
+using Junkyard.Camera;
 using Junkyard.Entities;
+using Junkyard.Entities.UnitFactories;
+using Junkyard.Entities.Units;
 using Junkyard.Helpers;
 using Junkyard.Particles;
 using LuaInterface;
@@ -36,7 +40,6 @@ namespace Junkyard.Screens
 
         private const int DUST_PARTICLE_SYSTEM = 1;
         private const string UnitsDirectory = "Images\\Units";
-        private readonly Vector3 SCENE_CENTER = new Vector3(-2.2f, 0.36f, 3.8f);
 
         #endregion
         #region Private fields
@@ -53,15 +56,19 @@ namespace Junkyard.Screens
                                                                 new Vector3(1.0f, -0.1f, -0.2f), Vector3.Zero, 0.8f),
                                                   };
 
+        private readonly Vector3 SCENE_CENTER = new Vector3(-2.2f, 0.36f, 3.8f);
+        private CameraManager _cameraManager;
+        private readonly string _map;
+        private ParticleManager _particleManager;
+
         private readonly InputAction _pauseAction;
         private float _pauseAlpha;
-        
+
         private FreeCamera camera;
-        private CameraManager _cameraManager;        
 
         private ContentManager content;
 
-        private TimeSpan elapsedTime = TimeSpan.Zero;        
+        private TimeSpan elapsedTime = TimeSpan.Zero;
         private int frameCounter;
         private int frameRate;
         private Player player1, player2;
@@ -73,8 +80,6 @@ namespace Junkyard.Screens
 
         private Simulation simulation;
         private SpriteFont spriteFont;
-        private ParticleManager _particleManager;
-        private string _map;
 
         #endregion
         #region Ctors
@@ -105,7 +110,7 @@ namespace Junkyard.Screens
 
         private void LayoutAccepted(Widget src, LayoutInstance instance)
         {
-            PuzzleBoardWidget widget = (PuzzleBoardWidget)src;
+            var widget = (PuzzleBoardWidget) src;
             Player who = widget.Board.Player;
 
             // spawn a new unit
@@ -138,17 +143,17 @@ namespace Junkyard.Screens
                 camera = new FreeCamera(SCENE_CENTER, MathHelper.ToRadians(45), aspectRatio, 0.1f,
                                         1000.0f);
 
-                _cameraManager = new CameraManager(camera);                
-                
-                scene = new Scene {CameraManager = _cameraManager, Ambient = new Color(0.7f, 0.7f, 0.7f)};                
+                _cameraManager = new CameraManager(camera);
+
+                scene = new Scene {CameraManager = _cameraManager, Ambient = new Color(0.7f, 0.7f, 0.7f)};
 
                 spriteFont = content.Load<SpriteFont>("Fonts/sample");
 
                 var dirLight = new Light(LightType.Directional, Color.Red);
                 dirLight.Direction = new Vector3(0.45f, -0.15f, 0.875f);
                 dirLight.Position = new Vector3(5.6f, 7.6f, 12.0f);
-                scene.ShadowCastingLights.Add(dirLight);                                
-                InitializeScene();               
+                scene.ShadowCastingLights.Add(dirLight);
+                InitializeScene();
 
                 // add the debug puzzleboard control
                 int boardMargin = 15;
@@ -341,11 +346,11 @@ namespace Junkyard.Screens
                 }
                 if (input.IsNewKeyPress(Keys.D5, null, out player))
                 {
-                    SpawnUnit("menel_boar", player1, 6*Vector3.UnitY);                    
+                    SpawnUnit("menel_boar", player1, 6*Vector3.UnitY);
                 }
                 if (input.IsNewKeyPress(Keys.D6, null, out player))
                 {
-                    SpawnUnit("menel_boar", player2, 6 * Vector3.UnitY);
+                    SpawnUnit("menel_boar", player2, 6*Vector3.UnitY);
                 }
                 if (input.IsNewKeyPress(Keys.D7, null, out player))
                 {
@@ -385,17 +390,8 @@ namespace Junkyard.Screens
                     puzzleBoard1.Randomize();
 
                 #endregion
-                simulation.Tick(gameTime);                                
+                simulation.Tick(gameTime);
             }
-        }
-
-        private void SpawnUnit(string name, Player player, Vector3 offsetV)
-        {
-            BattleUnit unit = simulation.Spawn(name);
-            unit.Simulation = simulation;
-            unit.Player = player;
-            unit.Avatar.Position = player.InitialPosition + offsetV;
-            simulation.Add(unit);
         }
 
 
@@ -428,8 +424,8 @@ namespace Junkyard.Screens
 
             if (player1.Hp == 0 || player2.Hp == 0)
             {
-                var winner = player2.Hp == 0 ? "Player 1" : "Player 2";
-                var message = winner + " has won!";
+                string winner = player2.Hp == 0 ? "Player 1" : "Player 2";
+                string message = winner + " has won!";
 
                 var battleOverMessage = new BattleOverScreen(message, false);
 
@@ -442,7 +438,7 @@ namespace Junkyard.Screens
             #endregion
             puzzleBoard1.Update(gameTime);
             puzzleBoard2.Update(gameTime);
-            
+
             _cameraManager.Update(gameTime);
 
             //timer section
@@ -463,25 +459,6 @@ namespace Junkyard.Screens
             //    var randomUnitPos = simulation.Units.GetRandomElement().Avatar.Position;
             //    _particleManager[DUST_PARTICLE_SYSTEM].AddParticles(new Vector2(randomUnitPos.X,randomUnitPos.Y));
             //}
-            
-        }
-
-        private void CameraDirector()
-        {            
-            if (_cameraManager.State == CameraState.Static && simulation.Units.Count == 0)
-            {
-                _cameraManager.Goto(SCENE_CENTER);
-            }
-            else if (simulation.Units.Count != 0)
-            {
-                var unit = simulation.Units.GetRandomElement();
-                
-                var avatar = unit.reallyDead ? null : unit.Avatar;
-                if (avatar != null)
-                {
-                    _cameraManager.Follow(avatar, GeneralHelper.RandomBetween(0.2f, 0.5f));
-                }
-            }
         }
 
         #endregion
@@ -525,16 +502,16 @@ namespace Junkyard.Screens
                     BattleUnitFactory factory = CreateFactory(kind);
                     factory.Params = unitData;
                     factory.Animations = animations;
-                    simulation.FactoryDispatcher.RegisterFactory(name, factory);                    
+                    simulation.FactoryDispatcher.RegisterFactory(name, factory);
                 }
             }
         }
 
         protected void InitializeScene()
         {
-            simulation = new Simulation();            
+            simulation = new Simulation();
 
-            DoUnitLoading();            
+            DoUnitLoading();
 
             var layer = new Layer(-1.25f);
             layer.Drawables.Add(simulation);
@@ -544,7 +521,7 @@ namespace Junkyard.Screens
             // TODO: remove hardcoded paths
             //string[] files = System.IO.Directory.GetFiles("Content/Maps", "*.lua");
             Lua lua = LuaMachine.Instance;
-            object[] luaResult = lua.DoFile("Content/Maps/"+_map);
+            object[] luaResult = lua.DoFile("Content/Maps/" + _map);
             var tbl = (LuaTable) luaResult[0];
 
             foreach (LuaTable el in tbl.Values)
@@ -563,7 +540,7 @@ namespace Junkyard.Screens
             scene.Unlayered.Add(ship2);
 
             var initialPositionY = (float) (double) lua["initialY"];
-            simulation.GroundLevel = initialPositionY+0.5f;
+            simulation.GroundLevel = initialPositionY + 0.5f;
 
             player1 = new Player("p1")
                           {
@@ -664,6 +641,36 @@ namespace Junkyard.Screens
                     finder.AddLayout(layout);
                 }
             }
+        }
+
+        #endregion
+        #region Private methods
+
+        private void CameraDirector()
+        {
+            if (_cameraManager.State == CameraState.Static && simulation.Units.Count == 0)
+            {
+                _cameraManager.Goto(SCENE_CENTER);
+            }
+            else if (simulation.Units.Count != 0)
+            {
+                BattleUnit unit = simulation.Units.GetRandomElement();
+
+                ScaledSprite3D avatar = unit.reallyDead ? null : unit.Avatar;
+                if (avatar != null)
+                {
+                    _cameraManager.Follow(avatar, GeneralHelper.RandomBetween(0.2f, 0.5f));
+                }
+            }
+        }
+
+        private void SpawnUnit(string name, Player player, Vector3 offsetV)
+        {
+            BattleUnit unit = simulation.Spawn(name);
+            unit.Simulation = simulation;
+            unit.Player = player;
+            unit.Avatar.Position = player.InitialPosition + offsetV;
+            simulation.Add(unit);
         }
 
         #endregion
