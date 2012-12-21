@@ -60,11 +60,13 @@
     <XnaCompressContent>true</XnaCompressContent>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="lua51">
-      <HintPath>..\..\..\..\lib\lua51.dll</HintPath>
+    <Reference Include="lua51, Version=0.0.0.0, Culture=neutral, PublicKeyToken=1e1fb15b02227b8a, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\lua51.dll</HintPath>
     </Reference>
-    <Reference Include="LuaInterface">
-      <HintPath>..\..\..\..\lib\LuaInterface.dll</HintPath>
+    <Reference Include="LuaInterface, Version=2.0.4.35791, Culture=neutral, PublicKeyToken=1e1fb15b02227b8a, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\LuaInterface.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
       <Private>False</Private>
@@ -96,8 +98,9 @@
     <Reference Include="mscorlib">
       <Private>False</Private>
     </Reference>
-    <Reference Include="Nuclex.Input">
-      <HintPath>..\..\..\..\lib\Nuclex\xna-4.0-x86\Nuclex.Input.dll</HintPath>
+    <Reference Include="Nuclex.Input, Version=4.0.0.0, Culture=neutral, PublicKeyToken=96bb577564343f16, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\Nuclex.Input.dll</HintPath>
     </Reference>
     <Reference Include="System">
       <Private>False</Private>
@@ -116,15 +119,32 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Animation.cs" />
-    <Compile Include="BattleUnit.cs" />
-    <Compile Include="BattleUnitFactories.cs" />
-    <Compile Include="Board.cs" />
-    <Compile Include="Camera.cs" />
-    <Compile Include="CameraManager.cs" />
+    <Compile Include="Animations\Animation.cs" />
+    <Compile Include="Animations\Frame.cs" />
+    <Compile Include="BoardLayoutFinder.cs" />
+    <Compile Include="Camera\PerspectiveCamera.cs" />
+    <Compile Include="Camera\FreeCamera.cs" />
+    <Compile Include="LayoutDescription.cs" />
+    <Compile Include="LayoutInstance.cs" />
+    <Compile Include="Entities\UnitFactories\BattleUnitFactoryDispatcher.cs" />
+    <Compile Include="Entities\UnitFactories\GenuineBattleUnitFactory.cs" />
+    <Compile Include="Entities\UnitFactories\InfantryFactory.cs" />
+    <Compile Include="Entities\UnitFactories\MeteorFactory.cs" />
+    <Compile Include="Entities\UnitFactories\ProjectileFactory.cs" />
+    <Compile Include="Entities\UnitFactories\RangedFactory.cs" />
+    <Compile Include="Entities\Units\AnimatedBattleUnit.cs" />
+    <Compile Include="Entities\Units\BattleUnit.cs" />
+    <Compile Include="Entities\UnitFactories\BattleUnitFactories.cs" />
+    <Compile Include="Camera\Camera.cs" />
+    <Compile Include="Camera\CameraManager.cs" />
     <Compile Include="Controls\Meter.cs" />
     <Compile Include="Entities\Ship.cs" />
+    <Compile Include="Entities\Units\Infantry.cs" />
+    <Compile Include="Entities\Units\Meteor.cs" />
+    <Compile Include="Entities\Units\Projectile.cs" />
+    <Compile Include="Entities\Units\Ranged.cs" />
     <Compile Include="Helpers\GeneralHelper.cs" />
+    <Compile Include="IDrawable.cs" />
     <Compile Include="Light.cs" />
     <Compile Include="LuaMachine.cs" />
     <Compile Include="Particles\DustParticleSystem.cs" />
@@ -135,10 +155,13 @@
     <Compile Include="Particles\ParticleManager.cs" />
     <Compile Include="Particles\ParticleSystem.cs" />
     <Compile Include="Particles\SmokePlumeParticleSystem.cs" />
+    <Compile Include="Player.cs" />
     <Compile Include="Postprocess.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Game.cs" />
+    <Compile Include="PuzzleBoard.cs" />
+    <Compile Include="ScalableSprite3D.cs" />
     <Compile Include="Scene.cs" />
     <Compile Include="ScreenFactory.cs" />
     <Compile Include="Screens\BackgroundScreen.cs" />

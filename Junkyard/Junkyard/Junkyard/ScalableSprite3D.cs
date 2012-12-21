@@ -96,5 +96,3 @@ namespace Junkyard
         #endregion
     }
 }
-
-}

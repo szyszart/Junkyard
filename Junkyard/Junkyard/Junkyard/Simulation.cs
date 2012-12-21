@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Junkyard.Entities;
+using Junkyard.Entities.UnitFactories;
 using Junkyard.Entities.Units;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
