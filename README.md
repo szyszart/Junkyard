@@ -21,3 +21,7 @@ Tworzony za pomocą XNA Framework.
 * .NET Framework 4.0
 * XNA Framework
 * Lua
+
+- - -
+
+Dziennik: [Google Docs](https://docs.google.com/document/d/14XQy1ct2yOIhUWS5O276l9cn0IzvxAp17CLTKIvyQc8/edit)
