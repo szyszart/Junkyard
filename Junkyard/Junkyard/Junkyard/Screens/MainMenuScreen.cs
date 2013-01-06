@@ -11,6 +11,7 @@
 
 using System.Collections.Generic;
 using GameStateManagement;
+using Junkyard.Localization;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -46,16 +47,16 @@ namespace Junkyard.Screens
             // Create our menu entries.            
             var playGameMenuEntry = new MenuEntry
                                               {
-                                                  Text = "Graj"                                                  
+                                                  Text = LR.Play
                                               };
 
             var optionsMenuEntry = new MenuEntry
                                              {
-                                                 Text = "Opcje",                                                 
+                                                 Text = LR.Settings,
                                              };
             var exitMenuEntry = new MenuEntry
                                           {
-                                              Text = "Wyjscie",                                              
+                                              Text = LR.Exit,
                                           };
 
             // Hook up menu event handlers.
@@ -70,13 +71,13 @@ namespace Junkyard.Screens
 
             
             menuLeft = new InputAction(
-                new Buttons[] { Buttons.DPadLeft, Buttons.LeftThumbstickLeft },
-                new Keys[] { Keys.Left },
+                new [] { Buttons.DPadLeft, Buttons.LeftThumbstickLeft },
+                new [] { Keys.Left },
                 true);
 
             menuRight = new InputAction(
-                new Buttons[] {Buttons.DPadRight, Buttons.LeftThumbstickRight},
-                new Keys[] {Keys.Right},
+                new [] {Buttons.DPadRight, Buttons.LeftThumbstickRight},
+                new [] {Keys.Right},
                 true);
 
             //create maps list
