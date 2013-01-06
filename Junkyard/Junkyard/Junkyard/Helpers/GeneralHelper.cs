@@ -31,9 +31,11 @@ namespace Junkyard.Helpers
             return list.Count() == 0 ? default(T) : list.ElementAt(_random.Next(list.Count()));
         }
 
-        //  a handy little function that gives a random float between two
-        // values. This will be used in several places in the sample, in particilar in
-        // ParticleSystem.InitializeParticle.
+        /// <summary>
+        /// A handy little function that gives a random float between two
+        /// values. This will be used in several places in the sample, in particilar in
+        /// ParticleSystem.InitializeParticle.
+        /// </summary>
         public static float RandomBetween(float min, float max)
         {
             return min + (float) _random.NextDouble()*(max - min);

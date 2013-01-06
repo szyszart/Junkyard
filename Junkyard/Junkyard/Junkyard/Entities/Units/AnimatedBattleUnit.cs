@@ -24,9 +24,11 @@ namespace Junkyard.Entities.Units
             get
             {
                 if (currentAnimation != null && Animations.ContainsKey(currentAnimation))
+                {
                     return (currentFrame >= Animations[currentAnimation].FrameCount);
-                else
-                    return true;
+                }
+                
+                return true;
             }
         }
 
@@ -41,8 +43,7 @@ namespace Junkyard.Entities.Units
         public AnimatedBattleUnit(Simulation simulation, Player player, Texture2D texture, Vector3 position)
             : base(simulation, player)
         {
-            Avatar = new ScaledSprite3D(texture, position);
-            Avatar.Position = position;
+            Avatar = new ScaledSprite3D(texture, position) {Position = position};
         }
 
         #endregion
@@ -75,20 +76,24 @@ namespace Junkyard.Entities.Units
 
         protected void AssertAnimation(string name)
         {
-            if (currentAnimation != name)
+            if (currentAnimation == name)
             {
-                Avatar.Texture = Animations[name].SpriteSheet;
-                ResetAnimation();
-                currentAnimation = name;
-                frameDuration = (1000.0f/Animations[currentAnimation].FramesPerSecond);
-                timeElapsed = 0;
+                return;
             }
+
+            Avatar.Texture = Animations[name].SpriteSheet;
+            ResetAnimation();
+            currentAnimation = name;
+            frameDuration = (1000.0f/Animations[currentAnimation].FramesPerSecond);
+            timeElapsed = 0;
         }
 
         protected void NextFrame()
         {
             if (!AnimationEnded)
+            {
                 currentFrame++;
+            }
         }
 
         protected void ResetAnimation()

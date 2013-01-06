@@ -484,7 +484,7 @@ namespace Junkyard.Screens
             }
         }
 
-        protected void DoUnitLoading()
+        protected void LoadUnits()
         {
             Lua lua = LuaMachine.Instance;
             string unitsPath = Path.Combine(_content.RootDirectory, UNITS_DIRECTORY);
@@ -514,7 +514,7 @@ namespace Junkyard.Screens
         {
             _simulation = new Simulation();
 
-            DoUnitLoading();
+            LoadUnits();
 
             var layer = new Layer(-1.25f);
             layer.Drawables.Add(_simulation);
