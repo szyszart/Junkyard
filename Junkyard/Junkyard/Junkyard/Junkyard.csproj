@@ -164,8 +164,11 @@
     <Compile Include="Program.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="PuzzleBoard.cs" />
+    <Compile Include="Rendering\ISceneRenderer.cs" />
+    <Compile Include="Rendering\Layer.cs" />
+    <Compile Include="Rendering\Scene.cs" />
+    <Compile Include="Rendering\SimpleSceneRenderer.cs" />
     <Compile Include="ScalableSprite3D.cs" />
-    <Compile Include="Scene.cs" />
     <Compile Include="ScreenFactory.cs" />
     <Compile Include="Screens\BackgroundScreen.cs" />
     <Compile Include="Screens\BattleOverScreen.cs" />
