@@ -172,16 +172,14 @@ namespace Junkyard.Screens
             // Make the menu slide into place during transitions, using a
             // power curve to make things look more interesting (this makes
             // the movement slow down as it nears the end).
-            float transitionOffset = (float)Math.Pow(TransitionPosition, 2);
+            var transitionOffset = (float)Math.Pow(TransitionPosition, 2);
 
             // start at Y = 175; each X value is generated per entry
-            Vector2 position = new Vector2(0f, 175f);
+            var position = new Vector2(0f, 175f);
 
             // update each menu entry's location in turn
-            for (int i = 0; i < menuEntries.Count; i++)
+            foreach (MenuEntry menuEntry in menuEntries)
             {
-                MenuEntry menuEntry = menuEntries[i];
-                
                 // each entry is to be centered horizontally
                 position.X = ScreenManager.GraphicsDevice.Viewport.Width / 2 - menuEntry.GetWidth(this) / 2;
 
@@ -223,7 +221,7 @@ namespace Junkyard.Screens
         public override void Draw(GameTime gameTime)
         {
             // make sure our entries are in the right place before we draw them
-            //UpdateMenuEntryLocations();
+            UpdateMenuEntryLocations();
 
             GraphicsDevice graphics = ScreenManager.GraphicsDevice;
             SpriteBatch spriteBatch = ScreenManager.SpriteBatch;
