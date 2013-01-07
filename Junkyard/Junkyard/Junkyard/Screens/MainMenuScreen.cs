@@ -8,7 +8,7 @@
 //-----------------------------------------------------------------------------
 
 #endregion
-#region Using Statements
+#region
 
 using System.Collections.Generic;
 using GameStateManagement;
@@ -23,7 +23,7 @@ using Microsoft.Xna.Framework.Input;
 namespace Junkyard.Screens
 {
     /// <summary>
-    /// The main menu screen is the first thing displayed when the game starts up.
+    ///   The main menu screen is the first thing displayed when the game starts up.
     /// </summary>
     internal class MainMenuScreen : MenuScreen
     {
@@ -55,7 +55,7 @@ namespace Junkyard.Screens
         #region Ctors
 
         /// <summary>
-        /// Constructor fills in the menu contents.
+        ///   Constructor fills in the menu contents.
         /// </summary>
         public MainMenuScreen()
             : base("")
@@ -108,8 +108,8 @@ namespace Junkyard.Screens
         #region Event handlers
 
         /// <summary>
-        /// Event handler for when the user selects ok on the "are you sure
-        /// you want to exit" message box.
+        ///   Event handler for when the user selects ok on the "are you sure
+        ///   you want to exit" message box.
         /// </summary>
         private void ConfirmExitMessageBoxAccepted(object sender, PlayerIndexEventArgs e)
         {
@@ -117,18 +117,19 @@ namespace Junkyard.Screens
         }
 
         /// <summary>
-        /// Event handler for when the Options menu entry is selected.
+        ///   Event handler for when the Options menu entry is selected.
         /// </summary>
         private void OptionsMenuEntrySelected(object sender, PlayerIndexEventArgs e)
         {
             //ScreenManager.AddScreen(new OptionsMenuScreen(), e.PlayerIndex);
             Viewport viewport = ScreenManager.GraphicsDevice.Viewport;
             _position = new Point(-viewport.Width, 0);
+            AdjustEntriesPosition(new Vector2(-viewport.Width, 0));
             _activeSection = ActiveSection.Settings;
         }
 
         /// <summary>
-        /// Event handler for when the Play Game menu entry is selected.
+        ///   Event handler for when the Play Game menu entry is selected.
         /// </summary>
         private void PlayGameMenuEntrySelected(object sender, PlayerIndexEventArgs e)
         {
@@ -142,6 +143,7 @@ namespace Junkyard.Screens
                 _activeSection = ActiveSection.Play;
                 Viewport viewport = ScreenManager.GraphicsDevice.Viewport;
                 _position = new Point(0, -viewport.Height);
+                AdjustEntriesPosition(new Vector2(0, -viewport.Height));
             }
         }
 
@@ -150,28 +152,25 @@ namespace Junkyard.Screens
 
         public override void Activate(bool instancePreserved)
         {
-            if (!instancePreserved)
+            if (instancePreserved)
             {
-                if (_content == null)
-                {
-                    _content = new ContentManager(ScreenManager.Game.Services, "Content");
-                }
-
-
-                Viewport viewport = ScreenManager.GraphicsDevice.Viewport;
-                MenuEntries[0].Position = new Vector2(viewport.Width/2, (viewport.Height)/3);
-                MenuEntries[1].Position = new Vector2(viewport.Width/3, (viewport.Height*2)/3);
-                MenuEntries[2].Position = new Vector2((viewport.Width*2)/3, (viewport.Height*2)/3);
-
-                _mainTexture = _content.Load<Texture2D>("Images/Menus/mainKabina");
-                _playTexture = _content.Load<Texture2D>("Images/Menus/maszt01");
-                _settingsTexture = _content.Load<Texture2D>("Images/Menus/settings");
+                return;
             }
-        }
 
-        protected override void UpdateMenuEntryLocations()
-        {
-            
+            if (_content == null)
+            {
+                _content = new ContentManager(ScreenManager.Game.Services, "Content");
+            }
+
+
+            Viewport viewport = ScreenManager.GraphicsDevice.Viewport;
+            MenuEntries[0].Position = new Vector2(viewport.Width/2, (viewport.Height)/3);
+            MenuEntries[1].Position = new Vector2(viewport.Width/3, (viewport.Height*2)/3);
+            MenuEntries[2].Position = new Vector2((viewport.Width*2)/3, (viewport.Height*2)/3);
+
+            _mainTexture = _content.Load<Texture2D>("Images/Menus/mainKabina");
+            _playTexture = _content.Load<Texture2D>("Images/Menus/maszt01");
+            _settingsTexture = _content.Load<Texture2D>("Images/Menus/settings");
         }
 
         public override void Draw(GameTime gameTime)
@@ -210,16 +209,21 @@ namespace Junkyard.Screens
                 _selectedMap++;
 
                 if (_selectedMap >= _maps.Count)
+                {
                     _selectedMap = 0;
+                }
             }
 
+            //go back to main menu
             if (_activeSection != ActiveSection.Main && menuCancel.Evaluate(input, ControllingPlayer, out playerIndex))
             {
+                AdjustEntriesPosition(new Vector2(-_position.X, -_position.Y));
                 _position = new Point(0, 0);
                 _activeSection = ActiveSection.Main;
+                return;
             }
 
-            if (_activeSection == ActiveSection.Main || _activeSection == ActiveSection.Play)
+            if (_activeSection != ActiveSection.Settings)
             {
                 base.HandleInput(gameTime, input);
             }
@@ -227,15 +231,11 @@ namespace Junkyard.Screens
 
         public override void Update(GameTime gameTime, bool otherScreenHasFocus, bool coveredByOtherScreen)
         {
-            foreach (MenuEntry me in MenuEntries)
-            {
-                me.Position = new Vector2(me.Position.X + _position.X, me.Position.Y + _position.Y);
-            }
             base.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
         }
 
         /// <summary>
-        /// When the user cancels the main menu, ask if they want to exit the sample.
+        ///   When the user cancels the main menu, ask if they want to exit the sample.
         /// </summary>
         protected override void OnCancel(PlayerIndex playerIndex)
         {
@@ -246,6 +246,23 @@ namespace Junkyard.Screens
             confirmExitMessageBox.Accepted += ConfirmExitMessageBoxAccepted;
 
             ScreenManager.AddScreen(confirmExitMessageBox, playerIndex);
+        }
+
+        protected override void UpdateMenuEntryLocations()
+        {
+        }
+
+        #endregion
+        #region Private methods
+
+        private void AdjustEntriesPosition(Vector2 offset)
+        {
+            foreach (MenuEntry me in MenuEntries)
+            {
+                {
+                    me.Position = me.Position + offset;
+                }
+            }
         }
 
         #endregion
