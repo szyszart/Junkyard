@@ -117,11 +117,32 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ConfirmExit" xml:space="preserve">
+    <value>Czy na pewno chcesz opuscic gre?</value>
+  </data>
   <data name="Exit" xml:space="preserve">
     <value>Wyjscie</value>
   </data>
+  <data name="GamePlayScreen_HasWon" xml:space="preserve">
+    <value> wygral!</value>
+  </data>
+  <data name="MessageBoxScreen_Usage" xml:space="preserve">
+    <value>\nPrzycisk A, Spacja, Enter = ok \nPrzycisk B, Esc = anuluj</value>
+  </data>
+  <data name="PauseMenuScreen_Paused" xml:space="preserve">
+    <value>Pauza</value>
+  </data>
+  <data name="PauseMenuScreen_Quit" xml:space="preserve">
+    <value>Wyjdz z gry</value>
+  </data>
+  <data name="PauseMenuScreen_Resume" xml:space="preserve">
+    <value>Wznow gre</value>
+  </data>
   <data name="Play" xml:space="preserve">
     <value>Graj</value>
+  </data>
+  <data name="Player" xml:space="preserve">
+    <value>Gracz</value>
   </data>
   <data name="Settings" xml:space="preserve">
     <value>Ustawienia</value>

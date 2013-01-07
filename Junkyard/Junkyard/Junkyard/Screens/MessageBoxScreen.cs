@@ -1,19 +1,23 @@
 #region File Description
+
 //-----------------------------------------------------------------------------
 // MessageBoxScreen.cs
 //
 // Microsoft XNA Community Game Platform
 // Copyright (C) Microsoft Corporation. All rights reserved.
 //-----------------------------------------------------------------------------
-#endregion
 
+#endregion
 #region Using Statements
+
 using System;
+using GameStateManagement;
+using Junkyard.Localization;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using GameStateManagement;
+
 #endregion
 
 namespace Junkyard.Screens
@@ -22,27 +26,24 @@ namespace Junkyard.Screens
     /// A popup message box screen, used to display "are you sure?"
     /// confirmation messages.
     /// </summary>
-    class MessageBoxScreen : GameScreen
+    internal class MessageBoxScreen : GameScreen
     {
-        #region Fields
+        #region Private fields
 
-        string message;
-        Texture2D gradientTexture;
+        private Texture2D gradientTexture;
 
-        InputAction menuSelect;
-        InputAction menuCancel;
+        private readonly InputAction menuCancel;
+        private readonly InputAction menuSelect;
+        private readonly string message;
 
         #endregion
-
         #region Events
 
         public event EventHandler<PlayerIndexEventArgs> Accepted;
         public event EventHandler<PlayerIndexEventArgs> Cancelled;
 
         #endregion
-
-        #region Initialization
-
+        #region Ctors
 
         /// <summary>
         /// Constructor automatically includes the standard "A=ok, B=cancel"
@@ -50,7 +51,8 @@ namespace Junkyard.Screens
         /// </summary>
         public MessageBoxScreen(string message)
             : this(message, true)
-        { }
+        {
+        }
 
 
         /// <summary>
@@ -59,11 +61,8 @@ namespace Junkyard.Screens
         /// </summary>
         public MessageBoxScreen(string message, bool includeUsageText)
         {
-            const string usageText = "\nA button, Space, Enter = ok" +
-                                     "\nB button, Esc = cancel"; 
-            
             if (includeUsageText)
-                this.message = message + usageText;
+                this.message = message + LR.MessageBoxScreen_Usage;
             else
                 this.message = message;
 
@@ -73,15 +72,17 @@ namespace Junkyard.Screens
             TransitionOffTime = TimeSpan.FromSeconds(0.2);
 
             menuSelect = new InputAction(
-                new Buttons[] { Buttons.A, Buttons.Start },
-                new Keys[] { Keys.Space, Keys.Enter },
+                new[] {Buttons.A, Buttons.Start},
+                new[] {Keys.Space, Keys.Enter},
                 true);
             menuCancel = new InputAction(
-                new Buttons[] { Buttons.B, Buttons.Back },
-                new Keys[] { Keys.Escape, Keys.Back },
+                new[] {Buttons.B, Buttons.Back},
+                new[] {Keys.Escape, Keys.Back},
                 true);
         }
 
+        #endregion
+        #region Overrides
 
         /// <summary>
         /// Loads graphics content for this screen. This uses the shared ContentManager
@@ -98,10 +99,46 @@ namespace Junkyard.Screens
             }
         }
 
-        #endregion
+        /// <summary>
+        /// Draws the message box.
+        /// </summary>
+        public override void Draw(GameTime gameTime)
+        {
+            SpriteBatch spriteBatch = ScreenManager.SpriteBatch;
+            SpriteFont font = ScreenManager.Font;
 
-        #region Handle Input
+            // Darken down any other screens that were drawn beneath the popup.
+            ScreenManager.FadeBackBufferToBlack(TransitionAlpha*2/3);
 
+            // Center the message text in the viewport.
+            Viewport viewport = ScreenManager.GraphicsDevice.Viewport;
+            var viewportSize = new Vector2(viewport.Width, viewport.Height);
+            Vector2 textSize = font.MeasureString(message);
+            Vector2 textPosition = (viewportSize - textSize)/2;
+
+            // The background includes a border somewhat larger than the text itself.
+            const int hPad = 32*9;
+            const int vPad = 16*6;
+
+            var backgroundRectangle = new Rectangle((int) textPosition.X - hPad,
+                                                    (int) textPosition.Y - vPad,
+                                                    (int) textSize.X*2 + hPad,
+                                                    (int) textSize.Y*2 + vPad);
+
+            // Fade the popup alpha during transitions.
+            Color color = Color.Black*TransitionAlpha;
+            Color fColor = Color.White*TransitionAlpha;
+
+            spriteBatch.Begin();
+
+            // Draw the background rectangle.
+            spriteBatch.Draw(gradientTexture, backgroundRectangle, fColor);
+
+            // Draw the message box text.
+            spriteBatch.DrawString(font, message, textPosition, color);
+
+            spriteBatch.End();
+        }
 
         /// <summary>
         /// Responds to user input, accepting or cancelling the message box.
@@ -132,54 +169,6 @@ namespace Junkyard.Screens
                 ExitScreen();
             }
         }
-
-
-        #endregion
-
-        #region Draw
-
-
-        /// <summary>
-        /// Draws the message box.
-        /// </summary>
-        public override void Draw(GameTime gameTime)
-        {
-            SpriteBatch spriteBatch = ScreenManager.SpriteBatch;
-            SpriteFont font = ScreenManager.Font;
-
-            // Darken down any other screens that were drawn beneath the popup.
-            ScreenManager.FadeBackBufferToBlack(TransitionAlpha * 2 / 3);
-
-            // Center the message text in the viewport.
-            Viewport viewport = ScreenManager.GraphicsDevice.Viewport;
-            Vector2 viewportSize = new Vector2(viewport.Width, viewport.Height);
-            Vector2 textSize = font.MeasureString(message);
-            Vector2 textPosition = (viewportSize - textSize) / 2;
-
-            // The background includes a border somewhat larger than the text itself.
-            const int hPad = 32*9;
-            const int vPad = 16*6;
-
-            Rectangle backgroundRectangle = new Rectangle((int)textPosition.X - hPad,
-                                                          (int)textPosition.Y - vPad,
-                                                          (int)textSize.X*2 + hPad,
-                                                          (int)textSize.Y*2 + vPad);
-
-            // Fade the popup alpha during transitions.
-            Color color = Color.Black * TransitionAlpha;
-            Color fColor = Color.White*TransitionAlpha;
-
-            spriteBatch.Begin();
-
-            // Draw the background rectangle.
-            spriteBatch.Draw(gradientTexture, backgroundRectangle, fColor);
-
-            // Draw the message box text.
-            spriteBatch.DrawString(font, message, textPosition, color);
-
-            spriteBatch.End();
-        }
-
 
         #endregion
     }

@@ -239,9 +239,7 @@ namespace Junkyard.Screens
         /// </summary>
         protected override void OnCancel(PlayerIndex playerIndex)
         {
-            const string message = "Are you siur you want to exit?";
-
-            var confirmExitMessageBox = new MessageBoxScreen(message);
+            var confirmExitMessageBox = new MessageBoxScreen(LR.ConfirmExit);
 
             confirmExitMessageBox.Accepted += ConfirmExitMessageBoxAccepted;
 

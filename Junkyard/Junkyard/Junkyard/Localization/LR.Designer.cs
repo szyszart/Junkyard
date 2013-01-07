@@ -61,6 +61,15 @@ namespace Junkyard.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to quit this game?.
+        /// </summary>
+        internal static string ConfirmExit {
+            get {
+                return ResourceManager.GetString("ConfirmExit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Exit.
         /// </summary>
         internal static string Exit {
@@ -70,11 +79,65 @@ namespace Junkyard.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to  has won!.
+        /// </summary>
+        internal static string GamePlayScreen_HasWon {
+            get {
+                return ResourceManager.GetString("GamePlayScreen_HasWon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to \nA button, Space, Enter = ok \nB button, Esc = cancel.
+        /// </summary>
+        internal static string MessageBoxScreen_Usage {
+            get {
+                return ResourceManager.GetString("MessageBoxScreen_Usage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Paused.
+        /// </summary>
+        internal static string PauseMenuScreen_Paused {
+            get {
+                return ResourceManager.GetString("PauseMenuScreen_Paused", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Quit Game.
+        /// </summary>
+        internal static string PauseMenuScreen_Quit {
+            get {
+                return ResourceManager.GetString("PauseMenuScreen_Quit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Resume Game.
+        /// </summary>
+        internal static string PauseMenuScreen_Resume {
+            get {
+                return ResourceManager.GetString("PauseMenuScreen_Resume", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Play.
         /// </summary>
         internal static string Play {
             get {
                 return ResourceManager.GetString("Play", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player.
+        /// </summary>
+        internal static string Player {
+            get {
+                return ResourceManager.GetString("Player", resourceCulture);
             }
         }
         

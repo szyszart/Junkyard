@@ -31,11 +31,11 @@ namespace Junkyard.Screens
         ///   Constructor.
         /// </summary>
         public PauseMenuScreen()
-            : base("Paused")
+            : base(LR.PauseMenuScreen_Paused)
         {
             // Create our menu entries.
-            var resumeGameMenuEntry = new MenuEntry("Resume Game");
-            var quitGameMenuEntry = new MenuEntry("Quit Game");
+            var resumeGameMenuEntry = new MenuEntry(LR.PauseMenuScreen_Resume);
+            var quitGameMenuEntry = new MenuEntry(LR.PauseMenuScreen_Quit);
 
             // Hook up menu event handlers.
             resumeGameMenuEntry.Selected += OnCancel;

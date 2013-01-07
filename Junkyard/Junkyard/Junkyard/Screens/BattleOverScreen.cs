@@ -1,5 +1,6 @@
 ﻿using System;
 using GameStateManagement;
+using Junkyard.Localization;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -44,11 +45,8 @@ namespace Junkyard.Screens
         /// </summary>
         public BattleOverScreen(string message, bool includeUsageText)
         {
-            const string usageText = "\nA button, Space, Enter = ok" +
-                                     "\nB button, Esc = cancel"; 
-            
             if (includeUsageText)
-                this.message = message + usageText;
+                this.message = message + LR.MessageBoxScreen_Usage;
             else
                 this.message = message;
 

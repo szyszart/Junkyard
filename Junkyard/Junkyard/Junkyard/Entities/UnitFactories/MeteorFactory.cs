@@ -9,22 +9,24 @@ namespace Junkyard.Entities.UnitFactories
     {
         #region Private fields
 
-        private Vector3 acc;
-        private float height;
-        private float range;
-        private Vector3 velocity;
+        private Vector3 _acc;
+        private float _height;
+        private float _range;
+        private Vector3 _velocity;
 
         #endregion
         #region Overrides
 
         public override BattleUnit Create()
         {
-            var unit = new Meteor();
-            unit.Animations = Animations;
-            unit.Velocity = velocity;
-            unit.Acceleration = acc;
-            unit.Range = range;
-            unit.Avatar.Position = unit.Avatar.Position + height*Vector3.UnitY;
+            var unit = new Meteor
+                           {
+                               Animations = Animations,
+                               Velocity = _velocity,
+                               Acceleration = _acc,
+                               Range = _range
+                           };
+            unit.Avatar.Position = unit.Avatar.Position + _height*Vector3.UnitY;
             return unit;
         }
 
@@ -34,13 +36,13 @@ namespace Junkyard.Entities.UnitFactories
             try
             {
                 var v = (LuaTable) data["velocity"];
-                velocity = new Vector3((float) (double) v[1], (float) (double) v[2], (float) (double) v[3]);
+                _velocity = new Vector3((float) (double) v[1], (float) (double) v[2], (float) (double) v[3]);
 
                 var a = (LuaTable) data["acceleration"];
-                acc = new Vector3((float) (double) v[1], (float) (double) v[2], (float) (double) v[3]);
+                _acc = new Vector3((float) (double) a[1], (float) (double) a[2], (float) (double) a[3]);
 
-                height = (float) (double) data["height"];
-                range = (float) (double) data["range"];
+                _height = (float) (double) data["height"];
+                _range = (float) (double) data["range"];
             }
             catch
             {

@@ -20,6 +20,7 @@ using Junkyard.Entities;
 using Junkyard.Entities.UnitFactories;
 using Junkyard.Entities.Units;
 using Junkyard.Helpers;
+using Junkyard.Localization;
 using Junkyard.Particles;
 using Junkyard.Rendering;
 using LuaInterface;
@@ -427,8 +428,9 @@ namespace Junkyard.Screens
 
             if (_player1.Hp == 0 || _player2.Hp == 0)
             {
-                string winner = _player2.Hp == 0 ? "Player 1" : "Player 2";
-                string message = winner + " has won!";
+                //TODO: wyprostowac to za pomoca String.Format
+                string winner = _player2.Hp == 0 ? " 1" : " 2";
+                string message = LR.Player + winner + LR.GamePlayScreen_HasWon;
 
                 var battleOverMessage = new BattleOverScreen(message, false);
 
