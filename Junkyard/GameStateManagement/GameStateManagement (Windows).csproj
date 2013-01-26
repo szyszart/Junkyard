@@ -77,7 +77,7 @@
     <Reference Include="Microsoft.Xna.Framework.Input.Touch, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="mscorlib" />
     <Reference Include="Nuclex.Input">
-      <HintPath>..\..\..\..\Documents\ii.uni\xna\nuclex-framework-r1404-binaries\xna-4.0-x86\Nuclex.Input.dll</HintPath>
+      <HintPath>..\lib\Nuclex.Input.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
