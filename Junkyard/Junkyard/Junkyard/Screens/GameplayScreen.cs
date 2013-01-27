@@ -84,7 +84,6 @@ namespace Junkyard.Screens
         private SimpleSceneRenderer _sceneRenderer;
 
         private Simulation _simulation;
-        private SpriteFont _spriteFont;
 
         #endregion
         #region Ctors
@@ -155,8 +154,6 @@ namespace Junkyard.Screens
             _cameraManager = new CameraManager(_camera);
 
             _scene = new Scene {CameraManager = _cameraManager, Ambient = new Color(0.7f, 0.7f, 0.7f)};
-
-            _spriteFont = _content.Load<SpriteFont>("Fonts/sample");
 
             var dirLight = new Light(LightType.Directional, Color.Red)
                                {
