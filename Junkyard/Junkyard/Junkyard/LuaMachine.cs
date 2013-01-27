@@ -21,6 +21,10 @@ namespace Junkyard
             var pos = el["pos"] as LuaTable;
             var ypr = el["yawpitchroll"] as LuaTable;
             var scale = el["scale"] as LuaTable;
+            if (pos == null || ypr == null || scale == null)
+            {
+                throw new ContentLoadException();
+            }
             var asset = new Sprite3D(
                 texture,
                 null,
@@ -30,7 +34,7 @@ namespace Junkyard
                 TableToVector(scale)
                 );
 
-            object normalMap = el["normalMap"];
+            var normalMap = el["normalMap"];
             if (normalMap != null)
                 asset.NormalMap = content.Load<Texture2D>((string) normalMap);
 

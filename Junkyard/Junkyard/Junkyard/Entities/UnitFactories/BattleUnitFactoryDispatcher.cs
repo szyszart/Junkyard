@@ -15,13 +15,21 @@ namespace Junkyard.Entities.UnitFactories
 
         public BattleUnit Create(string name)
         {
-            return specificFactories[name].Create();
+            BattleUnitFactory factory;
+            if (!specificFactories.TryGetValue(name, out factory))
+            {
+                throw new ArgumentException("No factory for given unit type.");
+            }
+            return factory.Create();
         }
 
         public void RegisterFactory(string name, BattleUnitFactory factory)
         {
             if (specificFactories.ContainsKey(name))
+            {
                 throw new ArgumentException("Name is already bound with a factory.");
+            }
+                
             specificFactories[name] = factory;
         }
 

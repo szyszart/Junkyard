@@ -109,18 +109,16 @@ namespace GameStateManagement
                 // Read input from the specified player.
                 playerIndex = controllingPlayer.Value;
 
-                int i = (int)playerIndex;
+                var i = (int)playerIndex;
 
                 return CurrentKeyboardStates[i].IsKeyDown(key);
             }
-            else
-            {
-                // Accept input from any player.
-                return (IsKeyPressed(key, PlayerIndex.One, out playerIndex) ||
-                        IsKeyPressed(key, PlayerIndex.Two, out playerIndex) ||
-                        IsKeyPressed(key, PlayerIndex.Three, out playerIndex) ||
-                        IsKeyPressed(key, PlayerIndex.Four, out playerIndex));
-            }
+            
+            // Accept input from any player.
+            return (IsKeyPressed(key, PlayerIndex.One, out playerIndex) ||
+                    IsKeyPressed(key, PlayerIndex.Two, out playerIndex) ||
+                    IsKeyPressed(key, PlayerIndex.Three, out playerIndex) ||
+                    IsKeyPressed(key, PlayerIndex.Four, out playerIndex));
         }
 
 
@@ -137,18 +135,15 @@ namespace GameStateManagement
                 // Read input from the specified player.
                 playerIndex = controllingPlayer.Value;
 
-                int i = (int)playerIndex;
+                var i = (int)playerIndex;
 
                 return CurrentGamePadStates[i].IsButtonDown(button);
             }
-            else
-            {
-                // Accept input from any player.
-                return (IsButtonPressed(button, PlayerIndex.One, out playerIndex) ||
-                        IsButtonPressed(button, PlayerIndex.Two, out playerIndex) ||
-                        IsButtonPressed(button, PlayerIndex.Three, out playerIndex) ||
-                        IsButtonPressed(button, PlayerIndex.Four, out playerIndex));
-            }
+            // Accept input from any player.
+            return (IsButtonPressed(button, PlayerIndex.One, out playerIndex) ||
+                    IsButtonPressed(button, PlayerIndex.Two, out playerIndex) ||
+                    IsButtonPressed(button, PlayerIndex.Three, out playerIndex) ||
+                    IsButtonPressed(button, PlayerIndex.Four, out playerIndex));
         }
 
 
@@ -165,19 +160,17 @@ namespace GameStateManagement
                 // Read input from the specified player.
                 playerIndex = controllingPlayer.Value;
 
-                int i = (int)playerIndex;
+                var i = (int)playerIndex;
 
                 return (CurrentKeyboardStates[i].IsKeyDown(key) &&
                         LastKeyboardStates[i].IsKeyUp(key));
             }
-            else
-            {
-                // Accept input from any player.
-                return (IsNewKeyPress(key, PlayerIndex.One, out playerIndex) ||
-                        IsNewKeyPress(key, PlayerIndex.Two, out playerIndex) ||
-                        IsNewKeyPress(key, PlayerIndex.Three, out playerIndex) ||
-                        IsNewKeyPress(key, PlayerIndex.Four, out playerIndex));
-            }
+
+            // Accept input from any player.
+            return (IsNewKeyPress(key, PlayerIndex.One, out playerIndex) ||
+                    IsNewKeyPress(key, PlayerIndex.Two, out playerIndex) ||
+                    IsNewKeyPress(key, PlayerIndex.Three, out playerIndex) ||
+                    IsNewKeyPress(key, PlayerIndex.Four, out playerIndex));
         }
 
 
@@ -194,19 +187,16 @@ namespace GameStateManagement
                 // Read input from the specified player.
                 playerIndex = controllingPlayer.Value;
 
-                int i = (int)playerIndex;
+                var i = (int)playerIndex;
 
                 return (CurrentGamePadStates[i].IsButtonDown(button) &&
                         LastGamePadStates[i].IsButtonUp(button));
             }
-            else
-            {
-                // Accept input from any player.
-                return (IsNewButtonPress(button, PlayerIndex.One, out playerIndex) ||
-                        IsNewButtonPress(button, PlayerIndex.Two, out playerIndex) ||
-                        IsNewButtonPress(button, PlayerIndex.Three, out playerIndex) ||
-                        IsNewButtonPress(button, PlayerIndex.Four, out playerIndex));
-            }
+            // Accept input from any player.
+            return (IsNewButtonPress(button, PlayerIndex.One, out playerIndex) ||
+                    IsNewButtonPress(button, PlayerIndex.Two, out playerIndex) ||
+                    IsNewButtonPress(button, PlayerIndex.Three, out playerIndex) ||
+                    IsNewButtonPress(button, PlayerIndex.Four, out playerIndex));
         }
     }
 }
