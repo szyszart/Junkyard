@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2010
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Junkyard", "Junkyard\Junkyard\Junkyard.csproj", "{678434F0-092B-4E0D-9A1D-264F7844BAEC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JunkyardContent", "Junkyard\JunkyardContent\JunkyardContent.contentproj", "{6D32E5F2-75A7-486B-B49B-436F9848FD53}"
@@ -8,6 +8,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameStateManagement (Windows)", "GameStateManagement\GameStateManagement (Windows).csproj", "{0A551D79-F37E-4529-9CA0-3FD2E9EA715E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JunkyardPipelineExtension", "JunkyardPipelineExtension\JunkyardPipelineExtension.csproj", "{CA9960A2-3CFA-4A53-85A8-A72B04EE0A92}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XNATweener", "Tweener\XNATweener.csproj", "{7ACA4145-1F41-4A08-8D46-81AD15F0E8DB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,6 +55,14 @@ Global
 		{CA9960A2-3CFA-4A53-85A8-A72B04EE0A92}.Release|Xbox 360.Build.0 = Release|x86
 		{CA9960A2-3CFA-4A53-85A8-A72B04EE0A92}.Release|Zune.ActiveCfg = Release|x86
 		{CA9960A2-3CFA-4A53-85A8-A72B04EE0A92}.Release|Zune.Build.0 = Release|x86
+		{7ACA4145-1F41-4A08-8D46-81AD15F0E8DB}.Debug|x86.ActiveCfg = Debug|x86
+		{7ACA4145-1F41-4A08-8D46-81AD15F0E8DB}.Debug|x86.Build.0 = Debug|x86
+		{7ACA4145-1F41-4A08-8D46-81AD15F0E8DB}.Debug|Xbox 360.ActiveCfg = Debug|x86
+		{7ACA4145-1F41-4A08-8D46-81AD15F0E8DB}.Debug|Zune.ActiveCfg = Debug|x86
+		{7ACA4145-1F41-4A08-8D46-81AD15F0E8DB}.Release|x86.ActiveCfg = Release|x86
+		{7ACA4145-1F41-4A08-8D46-81AD15F0E8DB}.Release|x86.Build.0 = Release|x86
+		{7ACA4145-1F41-4A08-8D46-81AD15F0E8DB}.Release|Xbox 360.ActiveCfg = Release|x86
+		{7ACA4145-1F41-4A08-8D46-81AD15F0E8DB}.Release|Zune.ActiveCfg = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
