@@ -15,38 +15,38 @@ namespace Junkyard
         #endregion
         #region Private fields
 
-        private readonly GraphicsDeviceManager graphics;
+        private readonly GraphicsDeviceManager _graphics;
 
-        private readonly ScreenFactory screenFactory;
-        private readonly ScreenManager screenManager;
+        private readonly ScreenFactory _screenFactory;
+        private readonly ScreenManager _screenManager;
 
         #endregion
         #region Ctors
 
         public Game()
         {
-            graphics = new GraphicsDeviceManager(this);
+            _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            graphics.PreferredBackBufferWidth = PREFERRED_WIDTH;
-            graphics.PreferredBackBufferHeight = PREFERRED_HEIGHT;
+            _graphics.PreferredBackBufferWidth = PREFERRED_WIDTH;
+            _graphics.PreferredBackBufferHeight = PREFERRED_HEIGHT;
 
             // Krzysztoff has an ancient computer and that's why he needs manual resolution settings
             // If you are lucky enough to have a more powerful machine, feel free to uncomment the following lines.
-            graphics.PreparingDeviceSettings += graphics_PreparingDeviceSettings;
+            _graphics.PreparingDeviceSettings += graphics_PreparingDeviceSettings;
 #if !DEBUG
             graphics.IsFullScreen = true;
 #endif
-
+            //why was it turned off?
+            IsFixedTimeStep = true;
             // disable FPS throttling
-            graphics.SynchronizeWithVerticalRetrace = false;
-            IsFixedTimeStep = false;
+            _graphics.SynchronizeWithVerticalRetrace = false;
 
-            screenFactory = new ScreenFactory();
-            Services.AddService(typeof (IScreenFactory), screenFactory);
+            _screenFactory = new ScreenFactory();
+            Services.AddService(typeof (IScreenFactory), _screenFactory);
 
             // Create the screen manager component.
-            screenManager = new ScreenManager(this);
-            Components.Add(screenManager);
+            _screenManager = new ScreenManager(this);
+            Components.Add(_screenManager);
 
             IsMouseVisible = false;
 
@@ -58,12 +58,8 @@ namespace Junkyard
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Black);
             base.Draw(gameTime);
-        }
-
-        protected override void UnloadContent()
-        {
         }
 
         #endregion
@@ -72,8 +68,8 @@ namespace Junkyard
         private void AddInitialScreens()
         {
             // Activate the first screens.
-            screenManager.AddScreen(new BackgroundScreen(), null);
-            screenManager.AddScreen(new MainMenuScreen(), null);
+            _screenManager.AddScreen(new BackgroundScreen(), null);
+            _screenManager.AddScreen(new MainMenuScreen(), null);
         }
 
         private void graphics_PreparingDeviceSettings(object sender, PreparingDeviceSettingsEventArgs e)
