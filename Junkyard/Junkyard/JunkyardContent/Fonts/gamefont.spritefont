@@ -1,15 +1,21 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <XnaContent xmlns:Graphics="Microsoft.Xna.Framework.Content.Pipeline.Graphics">
-	<Asset Type="Graphics:FontDescription">
+	<Asset Type="Junkyard.PipelineExtension.Localization.LocalizedFontDescription">
 		<FontName>Segoe UI</FontName>
 		<Size>32</Size>
 		<Spacing>2</Spacing>
 		<Style>Bold</Style>
+    
 		<CharacterRegions>
 			<CharacterRegion>
 				<Start>&#32;</Start>
 				<End>&#126;</End>
 			</CharacterRegion>
 		</CharacterRegions>
+
+    <ResourceFiles>
+      <Resx>..\Junkyard\Localization\LR.resx</Resx>
+      <Resx>..\Junkyard\Localization\LR.pl.resx</Resx>
+    </ResourceFiles>
 	</Asset>
 </XnaContent>

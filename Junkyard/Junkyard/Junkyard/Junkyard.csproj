@@ -200,8 +200,9 @@
       <Name>GameStateManagement %28Windows%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\JunkyardContent\JunkyardContent.contentproj">
-      <Name>JunkyardContent</Name>
+      <Name>JunkyardContent %28Content%29</Name>
       <XnaReferenceType>Content</XnaReferenceType>
+      <Project>{6D32E5F2-75A7-486B-B49B-436F9848FD53}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
