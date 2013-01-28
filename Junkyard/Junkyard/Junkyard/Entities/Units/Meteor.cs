@@ -75,7 +75,7 @@ namespace Junkyard.Entities.Units
                 AssertAnimation("dying");
                 if (AnimationEnded)
                 {
-                    reallyDead = true;
+                    ReallyDead = true;
                 }
             }
             else

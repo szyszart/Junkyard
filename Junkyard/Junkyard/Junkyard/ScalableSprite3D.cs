@@ -54,7 +54,7 @@ namespace Junkyard
             }
         }
 
-        public override Matrix World
+        protected override Matrix World
         {
             get
             {

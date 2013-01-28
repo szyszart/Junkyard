@@ -63,7 +63,7 @@ namespace Junkyard.Entities.Units
                 AssertAnimation("dying");
                 if (AnimationEnded)
                 {
-                    reallyDead = true;
+                    ReallyDead = true;
                 }
             }
             else
@@ -83,8 +83,8 @@ namespace Junkyard.Entities.Units
                     Move();
                 }
 
-                Hp -= acumulatedDmg;
-                acumulatedDmg = 0;
+                Hp -= AcumulatedDmg;
+                AcumulatedDmg = 0;
 
                 if (Hp <= 0)
                 {

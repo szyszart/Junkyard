@@ -1,4 +1,5 @@
 ﻿using GameStateManagement;
+using Junkyard.Helpers;
 using Junkyard.Screens;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -81,5 +82,12 @@ namespace Junkyard
         }
 
         #endregion
+
+        protected override void LoadContent()
+        {
+            base.LoadContent();
+            //initialize GraphicsDeciveHelper
+            GraphicsDeviceHelper.Instance.Initialize(GraphicsDevice);
+        }
     }
 }

@@ -231,7 +231,7 @@ namespace Junkyard.Particles
 			// the number of particles we want for this effect is a random number
 			// somewhere between the two constants specified by the subclasses.
 			int numParticles =
-				GeneralHelper.Random.Next(minNumParticles, maxNumParticles);
+				RandomizationHelper.Random.Next(minNumParticles, maxNumParticles);
 
 			// create that many particles, if you can.
 			for (int i = 0; i < numParticles && freeParticles.Count > 0; i++)
@@ -260,15 +260,15 @@ namespace Junkyard.Particles
 
 			// pick some random values for our particle
 			float velocity = 
-				GeneralHelper.RandomBetween(minInitialSpeed, maxInitialSpeed);
+				RandomizationHelper.RandomBetween(minInitialSpeed, maxInitialSpeed);
 			float acceleration =
-				GeneralHelper.RandomBetween(minAcceleration, maxAcceleration);
+				RandomizationHelper.RandomBetween(minAcceleration, maxAcceleration);
 			float lifetime =
-				GeneralHelper.RandomBetween(minLifetime, maxLifetime);
+				RandomizationHelper.RandomBetween(minLifetime, maxLifetime);
 			float scale =
-				GeneralHelper.RandomBetween(minScale, maxScale);
+				RandomizationHelper.RandomBetween(minScale, maxScale);
 			float rotationSpeed =
-				GeneralHelper.RandomBetween(minRotationSpeed, maxRotationSpeed);
+				RandomizationHelper.RandomBetween(minRotationSpeed, maxRotationSpeed);
 
 			// then initialize it with those random values. initialize will save those,
 			// and make sure it is marked as active.
@@ -284,7 +284,7 @@ namespace Junkyard.Particles
 		/// </summary>
 		protected virtual Vector2 PickRandomDirection()
 		{
-			float angle = GeneralHelper.RandomBetween(0, MathHelper.TwoPi);
+			float angle = RandomizationHelper.RandomBetween(0, MathHelper.TwoPi);
 			return new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle));
 		}
 

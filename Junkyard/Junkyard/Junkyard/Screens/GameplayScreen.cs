@@ -638,10 +638,10 @@ namespace Junkyard.Screens
             {
                 var unit = _simulation.Units.GetRandomElement();
 
-                var avatar = unit.reallyDead ? null : unit.Avatar;
+                var avatar = unit.ReallyDead ? null : unit.Avatar;
                 if (avatar != null)
                 {
-                    _cameraManager.Follow(avatar, GeneralHelper.RandomBetween(0.2f, 0.5f));
+                    _cameraManager.Follow(avatar, RandomizationHelper.RandomBetween(0.2f, 0.5f));
                 }
             }
         }

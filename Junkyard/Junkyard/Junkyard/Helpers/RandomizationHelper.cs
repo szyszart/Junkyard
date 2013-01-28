@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Junkyard.Helpers
 {
-    public static class GeneralHelper
+    public static class RandomizationHelper
     {
         #region Private fields
 
@@ -21,14 +21,15 @@ namespace Junkyard.Helpers
         #endregion
         #region Public static methods
 
-        public static T GetRandomElement<T>(this IEnumerable<T> list)
+        public static T GetRandomElement<T>(this IEnumerable<T> enumerable)
         {
-            if (list == null)
+            if (enumerable == null)
             {
-                throw new ArgumentNullException("list");
+                throw new ArgumentNullException("enumerable");
             }
 
-            return list.Count() == 0 ? default(T) : list.ElementAt(_random.Next(list.Count()));
+            var list = enumerable as IList<T> ?? enumerable.ToList();
+            return !list.Any() ? default(T) : list.ElementAt(_random.Next(list.Count()));
         }
 
         /// <summary>

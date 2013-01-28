@@ -97,7 +97,7 @@ namespace Junkyard.Particles
             this.TimeSinceStart = 0.0f;
 
             // set rotation to some random value between 0 and 360 degrees.
-            this.Rotation = GeneralHelper.RandomBetween(0, Microsoft.Xna.Framework.MathHelper.TwoPi);
+            this.Rotation = RandomizationHelper.RandomBetween(0, Microsoft.Xna.Framework.MathHelper.TwoPi);
         }
 
         // update is called by the ParticleSystem on every frame. This is where the

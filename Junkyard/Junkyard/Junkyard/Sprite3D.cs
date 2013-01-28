@@ -28,7 +28,7 @@ namespace Junkyard
 
         public Color TintColor { get; set; }
 
-        public virtual Matrix World
+        protected virtual Matrix World
         {
             get
             {

@@ -126,6 +126,9 @@
     <Compile Include="BoardLayoutFinder.cs" />
     <Compile Include="Camera\PerspectiveCamera.cs" />
     <Compile Include="Camera\FreeCamera.cs" />
+    <Compile Include="Consts\UnitConsts.cs" />
+    <Compile Include="Helpers\GraphicsDeviceHelper.cs" />
+    <Compile Include="Helpers\MathHelperExtensions.cs" />
     <Compile Include="LayoutDescription.cs" />
     <Compile Include="LayoutInstance.cs" />
     <Compile Include="Entities\UnitFactories\BattleUnitFactoryDispatcher.cs" />
@@ -145,7 +148,7 @@
     <Compile Include="Entities\Units\Meteor.cs" />
     <Compile Include="Entities\Units\Projectile.cs" />
     <Compile Include="Entities\Units\Ranged.cs" />
-    <Compile Include="Helpers\GeneralHelper.cs" />
+    <Compile Include="Helpers\RandomizationHelper.cs" />
     <Compile Include="IDrawable.cs" />
     <Compile Include="Light.cs" />
     <Compile Include="Localization\LR.Designer.cs">
@@ -199,6 +202,10 @@
       <Project>{0A551D79-F37E-4529-9CA0-3FD2E9EA715E}</Project>
       <Name>GameStateManagement %28Windows%29</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Tweener\XNATweener.csproj">
+      <Project>{7ACA4145-1F41-4A08-8D46-81AD15F0E8DB}</Project>
+      <Name>XNATweener</Name>
+    </ProjectReference>
     <ProjectReference Include="..\JunkyardContent\JunkyardContent.contentproj">
       <Name>JunkyardContent %28Content%29</Name>
       <XnaReferenceType>Content</XnaReferenceType>
@@ -239,6 +246,7 @@
       <LastGenOutput>LR.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\Microsoft.Xna.GameStudio.targets" />
   <!--

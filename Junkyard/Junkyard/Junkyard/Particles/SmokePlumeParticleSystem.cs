@@ -79,7 +79,7 @@ namespace Junkyard.Particles
 		{
 			// Point the particles somewhere between 80 and 100 degrees.
 			// tweak this to make the smoke have more or less spread.
-			float radians = GeneralHelper.RandomBetween(
+			float radians = RandomizationHelper.RandomBetween(
 				Microsoft.Xna.Framework.MathHelper.ToRadians(80), Microsoft.Xna.Framework.MathHelper.ToRadians(100));
 
 			Vector2 direction = Vector2.Zero;
@@ -102,7 +102,7 @@ namespace Junkyard.Particles
 
 			// the base is mostly good, but we want to simulate a little bit of wind
 			// heading to the right.
-			p.Acceleration.X += GeneralHelper.RandomBetween(10, 50);
+			p.Acceleration.X += RandomizationHelper.RandomBetween(10, 50);
 		}
 	}
 }
