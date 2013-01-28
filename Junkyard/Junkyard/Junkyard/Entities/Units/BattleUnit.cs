@@ -26,7 +26,6 @@ namespace Junkyard.Entities.Units
         public Player Player { get; set; }
         public bool ReallyDead { get; set; }
         public Simulation Simulation { get; set; }
-    ;
 
         /// <summary>
         ///     Determines whether enemy units will see this unit as a hostile entity.
