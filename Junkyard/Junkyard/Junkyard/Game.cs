@@ -35,7 +35,7 @@ namespace Junkyard
             // If you are lucky enough to have a more powerful machine, feel free to uncomment the following lines.
             _graphics.PreparingDeviceSettings += graphics_PreparingDeviceSettings;
 #if !DEBUG
-            graphics.IsFullScreen = true;
+            _graphics.IsFullScreen = true;
 #endif
             //why was it turned off?
             IsFixedTimeStep = true;
