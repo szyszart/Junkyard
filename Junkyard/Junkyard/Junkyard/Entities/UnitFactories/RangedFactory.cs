@@ -1,4 +1,6 @@
-﻿using Junkyard.Entities.Units;
+﻿using Junkyard.Consts;
+using Junkyard.Entities.Units;
+using Junkyard.Helpers;
 
 namespace Junkyard.Entities.UnitFactories
 {
@@ -8,7 +10,14 @@ namespace Junkyard.Entities.UnitFactories
 
         public override BattleUnit Create()
         {
-            var unit = new Ranged {Animations = Animations, AttackRange = AttackRange, Speed = Speed, Hp = InitialHP};
+            var unit = new Ranged
+                           {
+                               Animations = Animations,
+                               AttackRange = AttackRange,
+                               Speed =
+                                   Speed + RandomizationHelper.RandomBetween(0, UnitConsts.RANDOM_SPEED_OFFSET),
+                               Hp = InitialHP
+                           };
             return unit;
         }
 

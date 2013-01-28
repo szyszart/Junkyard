@@ -34,8 +34,7 @@ namespace Junkyard.Helpers
 
         /// <summary>
         /// A handy little function that gives a random float between two
-        /// values. This will be used in several places in the sample, in particilar in
-        /// ParticleSystem.InitializeParticle.
+        /// values.
         /// </summary>
         public static float RandomBetween(float min, float max)
         {

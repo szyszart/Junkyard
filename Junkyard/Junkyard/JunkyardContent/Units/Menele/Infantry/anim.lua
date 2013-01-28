@@ -64,7 +64,7 @@ local unit = {
 
 	-- kind-specific parameters
 	initial_hp = 100,
-	speed = 0.01,
+	speed = 0.011,
 	attack_range = 1.2,
 }
 
