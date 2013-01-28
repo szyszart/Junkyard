@@ -12,8 +12,8 @@ namespace Junkyard
     {
         #region Private fields
 
-        private readonly List<BattleUnit> ToAdd;
-        private readonly List<BattleUnit> ToRemove;
+        private readonly List<BattleUnit> _toAdd;
+        private readonly List<BattleUnit> _toRemove;
         private readonly Random _random = new Random();
 
         private readonly List<BattleUnit> _units;
@@ -38,8 +38,8 @@ namespace Junkyard
         public Simulation()
         {
             _units = new List<BattleUnit>();
-            ToRemove = new List<BattleUnit>();
-            ToAdd = new List<BattleUnit>();
+            _toRemove = new List<BattleUnit>();
+            _toAdd = new List<BattleUnit>();
             FactoryDispatcher = new BattleUnitFactoryDispatcher();
             GroundLevel = 0;
         }
@@ -49,7 +49,7 @@ namespace Junkyard
 
         public void Add(BattleUnit unit)
         {
-            ToAdd.Add(unit);
+            _toAdd.Add(unit);
         }
 
         public void Attack(BattleUnit who, BattleUnit attacker)
@@ -64,7 +64,7 @@ namespace Junkyard
             float minDist = float.PositiveInfinity;
             foreach (BattleUnit unit in _units)
             {
-                if (unit.Player == requester.Player || unit.reallyDead || unit.Stealth)
+                if (unit.Player == requester.Player || unit.ReallyDead || unit.Stealth)
                     continue;
                 float curDist = Vector3.Distance(unit.Avatar.Position, requester.Avatar.Position);
                 if (curDist < minDist)
@@ -79,7 +79,7 @@ namespace Junkyard
         public void Remove(BattleUnit unit)
         {
             unit.OnRemove();
-            ToRemove.Add(unit);
+            _toRemove.Add(unit);
         }
 
         public BattleUnit Spawn(string kind)
@@ -91,8 +91,19 @@ namespace Junkyard
         {
             foreach (BattleUnit unit in _units)
             {
-                if (!unit.reallyDead)
+                if (!unit.ReallyDead)
+                {
                     unit.OnTick(time);
+                }
+                else
+                {
+                    //if disposing ended - remove
+                    if (unit.OnDispose(time))
+                    {
+                        Remove(unit);
+                        continue;
+                    }
+                }
 
                 if (unit.Stealth) continue;
 
@@ -103,23 +114,24 @@ namespace Junkyard
                 // TODO: add a Y coordinate check
                 if (MathHelper.Distance(enemyShip.Position.X, unit.Avatar.Position.X) < 0.6f)
                 {
+                    // TODO: custom effects of unit atack on the enemy ship
                     enemyPlayer.Hp -= 10;
                     Remove(unit);
                 }
             }
 
-            foreach (BattleUnit unit in ToAdd)
+            foreach (BattleUnit unit in _toAdd)
             {
                 _units.Add(unit);
                 unit.OnSpawn();
             }
 
-            ToAdd.Clear();
+            _toAdd.Clear();
 
-            foreach (BattleUnit unit in ToRemove)
+            foreach (BattleUnit unit in _toRemove)
                 _units.Remove(unit);
 
-            ToRemove.Clear();
+            _toRemove.Clear();
         }
 
         #endregion
