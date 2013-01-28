@@ -50,6 +50,7 @@ namespace Junkyard.Screens
         private Point _position = new Point(0, 0);
         private int _selectedMap;
         private Texture2D _settingsTexture;
+        private Texture2D _rudderTexture;
 
         #endregion
         #region Ctors
@@ -171,15 +172,21 @@ namespace Junkyard.Screens
             _mainTexture = _content.Load<Texture2D>("Images/Menus/mainKabina");
             _playTexture = _content.Load<Texture2D>("Images/Menus/maszt01");
             _settingsTexture = _content.Load<Texture2D>("Images/Menus/settings");
+            _rudderTexture = _content.Load<Texture2D>("Images/Menus/ster");
         }
 
         public override void Draw(GameTime gameTime)
         {
             SpriteBatch spriteBatch = ScreenManager.SpriteBatch;
             Viewport viewport = ScreenManager.GraphicsDevice.Viewport;
+            
             var menuRect = new Rectangle(_position.X, _position.Y, viewport.Width, viewport.Height);
             var playRect = new Rectangle(_position.X, _position.Y + viewport.Height, viewport.Width, viewport.Height);
             var settingsRect = new Rectangle(_position.X + viewport.Width, _position.Y, viewport.Width, viewport.Height);
+            //TODO: proper rudder position calculation and state update
+            var rudderRect = new Rectangle(_position.X + viewport.Width/2 - _rudderTexture.Width/2,
+                                           _position.Y + (viewport.Height*2)/3 - _rudderTexture.Height*2/3 + 20,
+                                           _rudderTexture.Width, _rudderTexture.Height);
 
             spriteBatch.Begin();
 
@@ -188,6 +195,8 @@ namespace Junkyard.Screens
             spriteBatch.Draw(_playTexture, playRect,
                              new Color(TransitionAlpha, TransitionAlpha, TransitionAlpha));
             spriteBatch.Draw(_settingsTexture, settingsRect,
+                             new Color(TransitionAlpha, TransitionAlpha, TransitionAlpha));
+            spriteBatch.Draw(_rudderTexture, rudderRect,
                              new Color(TransitionAlpha, TransitionAlpha, TransitionAlpha));
 
             SpriteFont font = ScreenManager.Font;
